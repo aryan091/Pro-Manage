@@ -71,3 +71,17 @@ button:focus-visible {
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.circle {
+  position: absolute;
+  z-index: -1;
+  width: 16vw;
+  top: 50%;
+  right: 50%;
+  transform: translate(51.1%, -64%);
+  height: 16vw;
+  border-radius: 50%;
+  background-color: yellowgreen; /* Ensure you define --primary-600 in your styles */
+}
+
