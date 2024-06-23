@@ -7,7 +7,11 @@ import MainLayout from '../MainLayout/MainLayout'
 const Home = () => {
   return (
     <div className='home flex h-full w-full'>
-      <MainLayout />
+      {/* <MainLayout /> */}
+      <SidePage />
+      {/* <Login /> */}
+      <Register />
+
     </div>
   )
 }
