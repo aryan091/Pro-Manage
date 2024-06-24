@@ -5,6 +5,7 @@ import MainLayout from './components/MainLayout/MainLayout';
 import Dashboard from './components/Board/Board';
 import Analytics from './components/Analytics/Analytics';
 import Settings from './components/Settings/Settings';
+import PublicLayout from './components/PublicLayout/PublicLayout';
 function App() {
   return (
     <Router>
@@ -19,6 +20,7 @@ function App() {
 
           </Route>
 
+          <Route path="/public" element={<PublicLayout />} />
 
         </Routes>
       </div>
