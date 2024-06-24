@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { FaRegUser } from "react-icons/fa6";
 import { MdOutlineEmail, MdOutlineLock, MdVisibility } from 'react-icons/md';
 
-function Register() {
+
+function Register({clickLogin, clickSignUp}) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -88,18 +89,12 @@ function Register() {
 
           <p className="text-[#828282] text-md">Have no account yet?</p>
 
-          <button className="w-80 h-12 px-4 py-2 text-sm font-medium tracking-wide text-teal-500 capitalize bg-white rounded-3xl border border-teal-500 q">
+          <button className="w-80 h-12 px-4 py-2 text-sm font-medium tracking-wide text-teal-500 capitalize bg-white rounded-3xl border border-teal-500 q" onClick={clickLogin}>
             Log In
           </button>
         </div>
       </form>
 
-      <p className="mt-6 text-sm text-center text-gray-700">
-        Have an account?{' '}
-        <a href="#" className="text-teal-500 hover:underline">
-          Log in
-        </a>
-      </p>
     </div>
   );
 }

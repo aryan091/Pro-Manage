@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { MdOutlineEmail, MdOutlineLock, MdVisibility } from 'react-icons/md';
 
-const Login = () => {
+const Login = ({ clickLogin, clickSignUp }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
@@ -49,7 +49,7 @@ const Login = () => {
 
           <p className='text-[#828282] text-md'>Have no account yet?</p>
 
-          <button className="w-80 h-12 px-4 py-2 text-sm font-medium tracking-wide text-teal-500 capitalize bg-white rounded-3xl border border-teal-500 q">
+          <button className="w-80 h-12 px-4 py-2 text-sm font-medium tracking-wide text-teal-500 capitalize bg-white rounded-3xl border border-teal-500 q" onClick={clickSignUp}>
             Register
           </button>
         </div>
