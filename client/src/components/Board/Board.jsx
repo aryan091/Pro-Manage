@@ -6,6 +6,7 @@ import './custom-scrollbar.css';
 import TaskCard from '../TaskCard/TaskCard';
 import { SECTION_MAPPING } from '../../utils/SectionMapping';
 import CreateTaskModal from '../CreateTaskModal/CreateTaskModal';
+import AddPeopleModal from '../AddPeopleModal/AddPeopleModal';
 
 function Board() {
   const [tasks, setTasks] = useState({
@@ -23,8 +24,7 @@ function Board() {
   });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  
+  const [isAddPeopleModelOpen, setIsAddPeopleModelOpen] = useState(false);
 
   const toggleCollapseChecklists = (column) => {
     setCollapseChecklists({
@@ -89,7 +89,7 @@ function Board() {
       <div className="flex items-center mb-6">
         <h2 className="text-2xl font-semibold">Board</h2>
         <div className="flex items-center px-4 py-2 text-sm text-gray-600 font-semibold rounded-md cursor-pointer">
-          <HiOutlineUserAdd className="mr-2" /> Add People
+          <HiOutlineUserAdd className="mr-2" onClick={() => setIsAddPeopleModelOpen(true)}/> Add People
         </div>
       </div>
       <div className="cards-container flex-1 overflow-x-auto custom-scrollbar">
@@ -124,7 +124,8 @@ function Board() {
           ))}
         </div>
       </div>
-      {isModalOpen && <CreateTaskModal closeModal={() => setIsModalOpen(false)} addTask={addTask} />}
+      {isModalOpen && <CreateTaskModal closeModal={() => setIsModalOpen(false)} addTask={addTask} setIsModalOpen={setIsModalOpen} />}
+      {isAddPeopleModelOpen && <AddPeopleModal closeModal={() => setIsAddPeopleModelOpen(false)} setIsModalOpen={setIsAddPeopleModelOpen} />}
     </div>
   );
 }

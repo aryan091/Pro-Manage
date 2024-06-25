@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FaCircle } from "react-icons/fa";
 import './custom-scrollbar.css';
+import logo from '../../assets/icon.png';
 
 const ViewTask = () => {
   const [tasks, setTasks] = useState([
@@ -36,6 +37,7 @@ const ViewTask = () => {
           item: "Task to be done",
           checked: false,
         }
+        
       ],
       dueDate: "06/19/2024",
     },
@@ -75,9 +77,13 @@ const ViewTask = () => {
   };
 
   return (
-    <div className="view-task-container w-[75%] h-full fixed ml-[25%] p-4 mt-4 mb-4  flex justify-center items-center">
+    <div className="view-task-container w-full h-full fixed p-4 mt-4 mb-4 mx-auto flex flex-col justify-start items-center">
+      <div className="header-container w-full flex justify-start items-center mb-4">
+        <img src={logo} alt="Logo" className="w-6 h-6 inline-block mr-2" />
+        <h1 className="inline-block text-lg font-semibold">Pro Manage</h1>
+      </div>
 
-      <div className="view-task-content w-[654px] max-h-[782px] bg-white shadow-lg p-6 rounded-lg">
+      <div className="view-task-content w-[576px] max-h-[500px] bg-white shadow-lg p-6 rounded-lg mt-4">
         {tasks.map((task, taskIndex) => (
           <div key={taskIndex} className="view-task-card mb-4">
             <div className="view-task-header flex items-center justify-between mb-4">
@@ -96,7 +102,7 @@ const ViewTask = () => {
             <div className="view-task-title text-xl font-semibold mb-4">{task.title}</div>
             <p className="text-sm text-black mb-4">Checklist ({task.checklist.filter(item => item.checked).length}/{task.checklist.length})</p>
 
-            <div className="view-task-checklist custom-scrollbar overflow-y-auto max-h-[400px]">
+            <div className="view-task-checklist custom-scrollbar overflow-y-auto max-h-[300px]">
               {task.checklist.map((item, itemIndex) => (
                 <div key={itemIndex} className="view-task-checklist-item flex items-center mb-2 border border-gray-300 p-4 rounded-lg">
                   <input
@@ -105,14 +111,13 @@ const ViewTask = () => {
                     type="checkbox"
                     className="view-task-checkbox mr-2"
                     checked={item.checked}
-                    onChange={() => handleCheckboxChange(taskIndex, itemIndex)}
                   />
                   <span className="view-task-item-text text-sm">{item.item}</span>
                 </div>
               ))}
             </div>
             <div className="view-task-footer flex items-center gap-4 text-sm mt-4">
-              <span className="text-gray-500">Due Date</span>
+              <span className="text-black text-sm font-semibold">Due Date</span>
               <button className="view-task-due-date px-4 py-2 bg-[#CF3636] text-white rounded-lg text-xs">{formatDateString(task.dueDate)}</button>
             </div>
           </div>
