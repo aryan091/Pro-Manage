@@ -1,17 +1,26 @@
 import React, { useState } from 'react';
 import EmailAddedModal from '../EmailAddedModal/EmailAddedModal';
 
-const AddPeopleModal = ({ closeModal, setIsModalOpen }) => {
-  const [email, setEmail] = useState('');
+const AddPeopleModal = ({ closeModal, addUser }) => {
+  const [newUser, setNewUser] = useState('');
   const [isEmailAddedModalOpen, setIsEmailAddedModalOpen] = useState(false);
 
   const handleAddEmail = () => {
-    setIsEmailAddedModalOpen(true);
+    if (newUser.trim() === '') {
+      // Validation for empty input
+      return;
+    }
+    addUser(newUser); // Add the new user
+
+    setIsEmailAddedModalOpen(true); // Open the EmailAddedModal
   };
 
   const closeModalEmail = () => {
+    console.log('Closing Email Added Modal'); // Debugging log
     setIsEmailAddedModalOpen(false);
-    setIsModalOpen(false); // Close the AddPeopleModal as well
+    closeModal(); // Close the AddPeopleModal as well
+    setNewUser(''); // Clear the input field
+
   };
 
   return (
@@ -21,11 +30,11 @@ const AddPeopleModal = ({ closeModal, setIsModalOpen }) => {
           <p className="text-value font-bold text-xl">Add people to the board</p>
         </div>
         <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="text"
+          value={newUser}
+          onChange={(e) => setNewUser(e.target.value)}
           className="w-full p-2 border border-gray-300 rounded-xl mb-8"
-          placeholder="Enter the email"
+          placeholder="Enter the user name"
           required
         />
         <div className="add-people-task-modal-buttons flex text-center gap-2">
@@ -39,15 +48,17 @@ const AddPeopleModal = ({ closeModal, setIsModalOpen }) => {
             className="w-80 h-11 bg-[#17A2B8] text-white py-2 px-4 rounded-xl focus:outline-none focus:shadow-outline shadow-lg font-bold cursor-pointer"
             onClick={handleAddEmail}
           >
-            Add Email
+            Add User
           </button>
         </div>
       </div>
-      {isEmailAddedModalOpen && (
+      {isEmailAddedModalOpen ? (
         <EmailAddedModal
           closeModalEmail={closeModalEmail}
-          addEmail={email}
+          addEmail={newUser}
         />
+      ) : (
+        console.log('EmailAddedModal is not open') // Debugging log
       )}
     </div>
   );

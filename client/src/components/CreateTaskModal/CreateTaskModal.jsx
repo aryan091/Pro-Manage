@@ -5,13 +5,13 @@ import { IoMdAdd } from "react-icons/io";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
-const CreateTaskModal = ({ closeModal , addTask }) => {
-
+const CreateTaskModal = ({ closeModal, addTask, users }) => {
   const [title, setTitle] = useState('');
   const [selectedPriority, setSelectedPriority] = useState('');
   const [checklist, setChecklist] = useState([{ item: '', checked: false }]);
   const [dueDate, setDueDate] = useState(null);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState('');
   const datePickerRef = useRef(null);
 
   const handlePriorityChange = (priority) => {
@@ -48,19 +48,16 @@ const CreateTaskModal = ({ closeModal , addTask }) => {
       title,
       priority: selectedPriority,
       checklist,
-      dueDate:formatDate(dueDate),
-      // You might want to add assignee here too
+      dueDate: formatDate(dueDate),
+      assignedTo: selectedUser,
     };
 
     // Call addTask function passed from Board component
     addTask(newTask);
-    console.log("NewTask :- " ,newTask);
-    console.log(typeof(formatDate(dueDate)))
 
     // Close the modal
     closeModal();
   };
-
 
   const handleClickOutside = (event) => {
     if (isDatePickerOpen && datePickerRef.current && !datePickerRef.current.contains(event.target)) {
@@ -68,7 +65,6 @@ const CreateTaskModal = ({ closeModal , addTask }) => {
     }
   };
 
-      
   useEffect(() => {
     const handleOutsideClick = (event) => {
       if (isDatePickerOpen) {
@@ -77,18 +73,17 @@ const CreateTaskModal = ({ closeModal , addTask }) => {
         }
       }
     };
-  
+
     if (isDatePickerOpen) {
       document.addEventListener('mousedown', handleOutsideClick);
     } else {
       document.removeEventListener('mousedown', handleOutsideClick);
     }
-  
+
     return () => {
       document.removeEventListener('mousedown', handleOutsideClick);
     };
   }, [isDatePickerOpen]);
-      
 
   const formatDate = (date) => {
     if (!date) return 'Select Due Date';
@@ -174,12 +169,19 @@ const CreateTaskModal = ({ closeModal , addTask }) => {
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="assignee">
                 Assign to
               </label>
-              <input
+              <select
                 id="assignee"
-                type="text"
-                placeholder="Add an assignee"
                 className="task-assignee-input shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              />
+                value={selectedUser}
+                onChange={(event) => setSelectedUser(event.target.value)}
+              >
+                <option value="">Select an assignee</option>
+                {users.map((user) => (
+                  <option key={user} value={user}>
+                    {user}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="task-checklist flex flex-col h-[16.5rem] mb-4 flex-grow overflow-y-auto custom-scrollbar">
@@ -237,16 +239,16 @@ const CreateTaskModal = ({ closeModal , addTask }) => {
           </div>
         </form>
         {isDatePickerOpen && (
-            <div ref={datePickerRef} className="absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-  <DatePicker
-    selected={dueDate}
-    onChange={(date) => {
-      setDueDate(date);
-      setIsDatePickerOpen(false);
-    }}
-    inline
-  />
-</div>
+          <div ref={datePickerRef} className="absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+            <DatePicker
+              selected={dueDate}
+              onChange={(date) => {
+                setDueDate(date);
+                setIsDatePickerOpen(false);
+              }}
+              inline
+            />
+          </div>
         )}
       </div>
     </div>
@@ -254,4 +256,3 @@ const CreateTaskModal = ({ closeModal , addTask }) => {
 };
 
 export default CreateTaskModal;
-

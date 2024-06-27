@@ -24,7 +24,11 @@ function Board() {
   });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isAddPeopleModelOpen, setIsAddPeopleModelOpen] = useState(false);
+  const [isAddPeopleModalOpen, setIsAddPeopleModalOpen] = useState(false);
+  const [users, setUsers] = useState([]); // Add this line
+
+  console.log("users in board",users)
+  
 
   const toggleCollapseChecklists = (column) => {
     setCollapseChecklists({
@@ -78,6 +82,11 @@ function Board() {
     setIsModalOpen(false);  // Close modal after adding task
   };
 
+  // Add this function to add a new user
+  const addUser = (newUser) => {
+    setUsers(prevUsers => [...prevUsers, newUser]);
+  };
+
   return (
     <div className="w-[75%] h-full fixed ml-[25%] p-4">
       <header className="flex pb-4 border-b border-gray-200 justify-between">
@@ -88,8 +97,8 @@ function Board() {
       </header>
       <div className="flex items-center mb-6">
         <h2 className="text-2xl font-semibold">Board</h2>
-        <div className="flex items-center px-4 py-2 text-sm text-gray-600 font-semibold rounded-md cursor-pointer">
-          <HiOutlineUserAdd className="mr-2" onClick={() => setIsAddPeopleModelOpen(true)}/> Add People
+        <div className="flex items-center px-4 py-2 text-sm text-gray-600 font-semibold rounded-md cursor-pointer" onClick={() => setIsAddPeopleModalOpen(true)}>
+          <HiOutlineUserAdd className="mr-2" /> Add People
         </div>
       </div>
       <div className="cards-container flex-1 overflow-x-auto custom-scrollbar">
@@ -117,6 +126,8 @@ function Board() {
                     collapseChecklists={collapseChecklists[column]}
                     handleStatusChange={handleStatusChange}
                     updateChecklist={updateChecklist}
+                    assignedTo={task.assignedTo}
+                    users={users} // Pass users to TaskCard
                   />
                 ))}
               </div>
@@ -124,8 +135,8 @@ function Board() {
           ))}
         </div>
       </div>
-      {isModalOpen && <CreateTaskModal closeModal={() => setIsModalOpen(false)} addTask={addTask} setIsModalOpen={setIsModalOpen} />}
-      {isAddPeopleModelOpen && <AddPeopleModal closeModal={() => setIsAddPeopleModelOpen(false)} setIsModalOpen={setIsAddPeopleModelOpen} />}
+      {isModalOpen && <CreateTaskModal closeModal={() => setIsModalOpen(false)} addTask={addTask} setIsModalOpen={setIsModalOpen} users={users} />}
+      {isAddPeopleModalOpen && <AddPeopleModal closeModal={() => setIsAddPeopleModalOpen(false)} addUser={addUser} setIsModalOpen={setIsAddPeopleModalOpen} />}
     </div>
   );
 }
