@@ -1,5 +1,5 @@
 .custom-scrollbar {
-  scrollbar-width: thin; /* For Firefox */
+  scrollbar-width: none; /* For Firefox */
   scrollbar-color: #a3b5c1 #f0f4f8; /* For Firefox */
 }
 
@@ -29,7 +29,7 @@
 }
 
 .cards-container {
-  display: flex;
+  display: none;
   flex-grow: 1;
   overflow-x: auto;
   padding-bottom: 16px; /* To give space for the scrollbar */

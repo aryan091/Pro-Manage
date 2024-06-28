@@ -150,7 +150,7 @@ function TaskCard({ priority, title, checklist, date, section, collapseChecklist
         >
           {title}
         </h4>
-        <Tooltip id={`tooltip-${title}`} place="top" type="dark" effect="solid">
+        <Tooltip id={`tooltip-${title}`} place="top" type="dark" effect="solid" className='max-w-80 max-h-52'>
           {title} {/* Content of the tooltip */}
         </Tooltip>
       </div>
