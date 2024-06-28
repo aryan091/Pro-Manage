@@ -103,6 +103,30 @@ function TaskCard({ priority, title, checklist, date, section, collapseChecklist
     }
   };
 
+  const today = new Date();
+  const taskDueDate = new Date(date);
+
+  let dueDateColorClass = '';
+  let dueDateTextColorClass = '';
+
+  if (section === 'done') {
+    if (taskDueDate < today) {
+      dueDateColorClass = 'bg-[#63C05B]'; // Green for completed tasks past due
+      dueDateTextColorClass = 'text-white'; // White text for green background
+    } else {
+      dueDateColorClass = 'bg-[#DBDBDB]'; // Gray for completed tasks due today or in future
+      dueDateTextColorClass = 'text-[#5A5A5A]'; // Grey text for gray background
+    }
+  } else {
+    if (taskDueDate < today) {
+      dueDateColorClass = 'bg-[#CF3636]'; // Red for tasks past due
+      dueDateTextColorClass = 'text-white font-bold'; // White text for red background
+    } else {
+      dueDateColorClass = 'bg-gray-200'; // Gray for tasks due today or in future
+      dueDateTextColorClass = 'text-[#5A5A5A] font-bold'; // Grey text for gray background
+    }
+  }
+
   return (
     <div className="task-card p-4 bg-white rounded-lg shadow-sm relative">
       <div className="task-card-box flex items-center justify-between mb-2">
@@ -113,7 +137,7 @@ function TaskCard({ priority, title, checklist, date, section, collapseChecklist
               className="ml-2 bg-gray-200 text-gray-800 rounded-full w-5 h-5 flex items-center justify-center cursor-pointer"
               data-tooltip-id={`tooltip-${assignedTo}`}
               data-tooltip-content={assignedTo}
-                >
+            >
               {getInitials(assignedTo)}
             </span>
           )}
@@ -175,25 +199,14 @@ function TaskCard({ priority, title, checklist, date, section, collapseChecklist
           ))}
         </div>
       )}
-      {date !== 'Select Due Date' ? (
-        <div className="flex items-center justify-between text-sm">
-          <button className="w-16 h-7 bg-[#CF3636] text-[10px] text-white rounded-xl">{formatDateString(date)}</button>
-          <div className="status-tiles flex space-x-2 text-[10px] rounded-xl">
-            {statusTiles.map((status, index) => (
-              <button key={index} className="px-2 py-1 bg-gray-200 rounded-xl" onClick={() => handleStatusChange(title, status)}>{STATUS_MAPPING[status]}</button>
-            ))}
-          </div>
+      <div className="flex items-center justify-between text-sm">
+        <button className={`w-16 h-7 text-[10px] rounded-xl ${dueDateColorClass} ${dueDateTextColorClass}`}>{formatDateString(date)}</button>
+        <div className="status-tiles flex space-x-2 text-[10px] rounded-xl">
+          {statusTiles.map((status, index) => (
+            <button key={index} className="px-2 py-1 bg-gray-200 rounded-xl" onClick={() => handleStatusChange(title, status)}>{STATUS_MAPPING[status]}</button>
+          ))}
         </div>
-      ) : (
-        <div className="flex items-center justify-between text-sm">
-          <button className="w-16 h-7 display-none text-[10px] text-white rounded-xl"></button>
-          <div className="status-tiles flex space-x-2 text-[10px] rounded-xl">
-            {statusTiles.map((status, index) => (
-              <button key={index} className="px-2 py-1 bg-gray-200 rounded-xl" onClick={() => handleStatusChange(title, status)}>{STATUS_MAPPING[status]}</button>
-            ))}
-          </div>
-        </div>
-      )}
+      </div>
       {isDeleteModalOpen && <DeleteTaskModal closeModal={() => setIsDeleteModalOpen(false)} />}
     </div>
   );
