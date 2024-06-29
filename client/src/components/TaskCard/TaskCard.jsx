@@ -111,19 +111,19 @@ function TaskCard({ priority, title, checklist, date, section, collapseChecklist
 
   if (section === 'done') {
     if (taskDueDate < today) {
-      dueDateColorClass = 'bg-[#63C05B]'; // Green for completed tasks past due
-      dueDateTextColorClass = 'text-white'; // White text for green background
+      dueDateColorClass = 'bg-[#63C05B]'; 
+      dueDateTextColorClass = 'text-white'; 
     } else {
-      dueDateColorClass = 'bg-[#DBDBDB]'; // Gray for completed tasks due today or in future
-      dueDateTextColorClass = 'text-[#5A5A5A]'; // Grey text for gray background
+      dueDateColorClass = 'bg-[#DBDBDB]'; 
+      dueDateTextColorClass = 'text-[#5A5A5A]'; 
     }
   } else {
     if (taskDueDate < today) {
-      dueDateColorClass = 'bg-[#CF3636]'; // Red for tasks past due
-      dueDateTextColorClass = 'text-white font-bold'; // White text for red background
+      dueDateColorClass = 'bg-[#CF3636]'; 
+      dueDateTextColorClass = 'text-white font-bold'; 
     } else {
-      dueDateColorClass = 'bg-gray-200'; // Gray for tasks due today or in future
-      dueDateTextColorClass = 'text-[#5A5A5A] font-bold'; // Grey text for gray background
+      dueDateColorClass = 'bg-gray-200'; 
+      dueDateTextColorClass = 'text-[#5A5A5A] font-bold';
     }
   }
 
