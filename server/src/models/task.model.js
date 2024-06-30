@@ -38,7 +38,6 @@ const mongoose = require('mongoose');
         },
     }, { timestamps: true });
 
-    Task = mongoose.model('Task', taskSchema);
 
 
-module.exports = Task;
+    module.exports = mongoose.model("Task", taskSchema);

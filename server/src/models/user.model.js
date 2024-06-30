@@ -22,7 +22,4 @@ const taskSchema = new mongoose.Schema({
   ],
 }, { timestamps: true });
 
-// Create the model from the schema
-const Task = mongoose.model('Task', taskSchema);
-
-module.exports = Task;
+module.exports = mongoose.model("User", taskSchema);
