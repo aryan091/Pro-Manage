@@ -11,12 +11,12 @@ const registerUser = asyncHandler( async (req , res) => {
     try {
         // get user details from frontend
 
-        const { name, email, password } = req.body
+        const { name, email, password , confirmPassword } = req.body
     
         // validation - not empty
     
         if (
-            [ name,email, password].some((field) => field?.trim() === "")
+            [ name,email, password, confirmPassword].some((field) => field?.trim() === "")
         ) {
             return res.status(401).json({ success: false, message: "All Fields are required" })        }
     
@@ -27,6 +27,11 @@ const registerUser = asyncHandler( async (req , res) => {
         if(existedUser)
         {
             return res.status(401).json({ success: false, message: "User already exists" })
+        }
+
+        if(password !== confirmPassword)
+        {
+            return res.status(401).json({ success: false, message: "Passwords do not match" })
         }
     
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -50,7 +55,11 @@ const registerUser = asyncHandler( async (req , res) => {
         // return res
     
         return res.status(201).json(
-            new ApiResponse(200,"User registered Successfully", createdUser, true) 
+            new ApiResponse(
+                200,
+                createdUser, 
+                "User registered Successfully", 
+                true) 
         )
     } catch (error) {
         console.log(error)
