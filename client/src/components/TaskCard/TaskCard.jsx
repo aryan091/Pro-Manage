@@ -76,7 +76,10 @@ function TaskCard({ priority, title, checklist, date, section, collapseChecklist
   }
 
   const formatDateString = (dateString) => {
+    if (!dateString) return ""; // Handle null or undefined dateString
     const date = new Date(dateString);
+    if (isNaN(date.getTime())) return ""; // Handle invalid date strings
+    
     const options = { day: 'numeric', month: 'short' };
     const formatter = new Intl.DateTimeFormat('en-US', options);
     const parts = formatter.formatToParts(date);
@@ -85,7 +88,7 @@ function TaskCard({ priority, title, checklist, date, section, collapseChecklist
     const dayWithSuffix = getDayWithSuffix(day);
     return `${month} ${dayWithSuffix}`;
   };
-
+  
   const getDayWithSuffix = (day) => {
     if (day === '11' || day === '12' || day === '13') {
       return `${day}th`;
@@ -199,14 +202,25 @@ function TaskCard({ priority, title, checklist, date, section, collapseChecklist
           ))}
         </div>
       )}
-      <div className="flex items-center justify-between text-sm">
-        <button className={`w-16 h-7 text-[10px] rounded-xl ${dueDateColorClass} ${dueDateTextColorClass}`}>{formatDateString(date)}</button>
-        <div className="status-tiles flex space-x-2 text-[10px] rounded-xl">
-          {statusTiles.map((status, index) => (
-            <button key={index} className="px-2 py-1 bg-gray-200 rounded-xl" onClick={() => handleStatusChange(title, status)}>{STATUS_MAPPING[status]}</button>
-          ))}
+      {date !== 'Select Due Date' ? (
+        <div className="flex items-center justify-between text-sm">
+          <button className={`w-16 h-7 bg-[#CF3636] text-[10px] text-white rounded-xl ${dueDateColorClass} ${dueDateTextColorClass}`}>{formatDateString(date)}</button>
+          <div className="status-tiles flex space-x-2 text-[10px] rounded-xl">
+            {statusTiles.map((status, index) => (
+              <button key={index} className="px-2 py-1 bg-gray-200 rounded-xl" onClick={() => handleStatusChange(title, status)}>{STATUS_MAPPING[status]}</button>
+            ))}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="flex items-center justify-between text-sm">
+          <button className="w-16 h-7 display-none text-[10px] text-white rounded-xl"></button>
+          <div className="status-tiles flex space-x-2 text-[10px] rounded-xl">
+            {statusTiles.map((status, index) => (
+              <button key={index} className="px-2 py-1 bg-gray-200 rounded-xl" onClick={() => handleStatusChange(title, status)}>{STATUS_MAPPING[status]}</button>
+            ))}
+          </div>
+        </div>
+      )}
       {isDeleteModalOpen && <DeleteTaskModal closeModal={() => setIsDeleteModalOpen(false)} />}
     </div>
   );

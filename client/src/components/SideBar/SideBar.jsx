@@ -14,18 +14,18 @@ const SideBar = () => {
           <Link to='/app/dashboard'><h1 className="inline-block text-lg font-semibold">Pro Manage</h1></Link>
         </div>
         <nav className="flex flex-col p-4 space-y-4">
-          <a href="#" className="flex items-center text-teal-600 bg-gray-100 p-2 rounded">
+          <Link to="/app/dashboard" className="flex items-center text-teal-600 bg-gray-100 p-2 rounded">
             <img src={boardIcon} alt="Board" className="w-6 h-6 mr-2"/> 
             <Link to='/app/dashboard'><span className="font-bold">Board</span></Link>
-          </a>
-          <a href="#" className="flex items-center text-gray-700 p-2 rounded hover:bg-gray-100">
+          </Link>
+          <Link to="/app/analytics" className="flex items-center text-gray-700 p-2 rounded hover:bg-gray-100">
             <img src={database} alt="Analytics" className="w-6 h-6 mr-2"/> 
             <Link to='/app/analytics'><span>Analytics</span></Link>
-          </a>
-          <a href="#" className="flex items-center text-gray-700 p-2 rounded hover:bg-gray-100">
+          </Link>
+          <Link to="/app/settings" className="flex items-center text-gray-700 p-2 rounded hover:bg-gray-100">
             <img src={setting} alt="Settings" className="w-6 h-6 mr-2"/> 
             <Link to='/app/settings'><span>Settings</span></Link>
-          </a>
+          </Link>
         </nav>
         <div className="p-4 mt-auto mb-8">
           <a href="#" className="flex items-center text-red-600 p-2 rounded hover:bg-gray-100">

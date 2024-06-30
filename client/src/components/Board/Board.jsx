@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import collapse from '../../assets/collapse.png';
 import { HiOutlineUserAdd } from 'react-icons/hi';
 import { IoMdAdd } from "react-icons/io";
@@ -26,9 +26,9 @@ function Board() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddPeopleModalOpen, setIsAddPeopleModalOpen] = useState(false);
   const [users, setUsers] = useState([]); // Add this line
+  const [filter, setFilter] = useState('This Week');
 
-  console.log("users in board",users)
-  
+  console.log("users in board", users);
 
   const toggleCollapseChecklists = (column) => {
     setCollapseChecklists({
@@ -40,7 +40,7 @@ function Board() {
   const handleStatusChange = (taskTitle, newStatus) => {
     setTasks(prevTasks => {
       const updatedTasks = { ...prevTasks };
-  
+
       let taskToMove;
       for (const section in updatedTasks) {
         const taskIndex = updatedTasks[section].findIndex(task => task.title === taskTitle);
@@ -49,18 +49,18 @@ function Board() {
           break;
         }
       }
-  
+
       if (taskToMove) {
         // Update the status of the task
         taskToMove.status = newStatus;
         updatedTasks[newStatus].push(taskToMove);
       }
-  
+
       console.log("Updated tasks:", taskToMove);
       return updatedTasks;
     });
   };
-  
+
   const updateChecklist = (taskTitle, checklistIndex, checked) => {
     setTasks(prevTasks => {
       const updatedTasks = { ...prevTasks };
@@ -90,6 +90,7 @@ function Board() {
     setUsers(prevUsers => [...prevUsers, newUser]);
   };
 
+
   return (
     <div className="w-[75%] h-full fixed ml-[25%] p-4">
       <header className="flex pb-4 border-b border-gray-200 justify-between">
@@ -102,6 +103,17 @@ function Board() {
         <h2 className="text-2xl font-semibold">Board</h2>
         <div className="flex items-center px-4 py-2 text-sm text-gray-600 font-semibold rounded-md cursor-pointer" onClick={() => setIsAddPeopleModalOpen(true)}>
           <HiOutlineUserAdd className="mr-2" /> Add People
+        </div>
+        <div className="relative ml-auto">
+          <select
+            className="pl-4 py-2 text-sm text-gray-600 font-semibold rounded-md cursor-pointer bg-white "
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+          >
+            <option value="Today">Today</option>
+            <option value="This Week">This Week</option>
+            <option value="This Month">This Month</option>
+          </select>
         </div>
       </div>
       <div className="cards-container flex-1 overflow-x-auto custom-scrollbar">

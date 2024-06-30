@@ -3,6 +3,8 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const dotenv = require('dotenv').config()
+const userRoute = require('./routes/user.routes')
+const taskRoute = require('./routes/task.routes')
 
 const app = express()
 
@@ -14,6 +16,10 @@ app.use(cors(
 app.use(express.json())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use("/api/v1/user",userRoute)
+app.use("/api/v1/task",taskRoute)
+
 
 
 app.get('/', (req, res) => {

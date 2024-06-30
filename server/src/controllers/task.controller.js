@@ -239,7 +239,20 @@ const updateTaskStatus = asyncHandler(async (req, res) => {
             });
         }
         task.status = status;
+
+
+        const assignedUser = await User.findById(task.assignedTo); // Assuming assignedTo holds the user ID
+        if (assignedUser) {
+            // Update user's view of the task (could update status or any other relevant field)
+            const taskIndex = assignedUser.tasks.findIndex(task => task.taskId.toString() === taskId.toString());
+            if (taskIndex !== -1) {
+                assignedUser.tasks[taskIndex].status = status;
+            }
+        }
+
         const updatedTask = await task.save();
+
+
         return res.status(200).json(
             new ApiResponse(
                 200,
@@ -289,10 +302,116 @@ const updateChecklist = asyncHandler(async (req, res) => {
     } 
 });
 
+const getTaskAnalytics = asyncHandler(async (req, res) => {
+    try {
+        const userId = req.userId;
+
+        const tasks = await Task.find({ createdBy: userId });
+
+        const analytics = {
+            backlogTasks: 0,
+            todoTasks: 0,
+            inProgressTasks: 0,
+            completedTasks: 0,
+            lowPriorityTasks: 0,
+            moderatePriorityTasks: 0,
+            highPriorityTasks: 0,
+            dueDateTasks: 0,
+          };
+      
+          // Calculate the analytics
+          tasks.forEach(task => {
+            // Count tasks by status
+            if (task.status === 'backlog') {
+              analytics.backlogTasks++;
+            } else if (task.status === 'todo') {
+              analytics.todoTasks++;
+            } else if (task.status === 'inProgress') {
+              analytics.inProgressTasks++;
+            } else if (task.status === 'done') {
+              analytics.completedTasks++;
+            }
+      
+            // Count tasks by priority
+            if (task.priority === 'low') {
+              analytics.lowPriorityTasks++;
+            } else if (task.priority === 'moderate') {
+              analytics.moderatePriorityTasks++;
+            } else if (task.priority === 'high') {
+              analytics.highPriorityTasks++;
+            }
+      
+            // Count tasks with a due date
+            if (task.dueDate) {
+              analytics.dueDateTasks++;
+            }
+          });
+
+          return res.status(200).json(
+            new ApiResponse(
+                200,
+                analytics,
+                "Analytics fetched successfully",
+                true
+            )
+        );
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+cpnst deleteTask = asyncHandler(async (req, res) => {
+    try {
+        const { id } = req.params;
+        const task = await Task.findById(id);
+        if (!task) {
+            return res.status(404).json({ success: false, message: "Task not found" });
+        }
+        await task.remove();
+        return res.status(200).json(
+            new ApiResponse(
+                200,
+                task,
+                "Task deleted successfully",
+                true
+            )
+        ) 
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ success: false, message: "Internal server error" });
+    }
+});
+
+const getTaskById = asyncHandler(async (req, res) => {
+    try {
+        const { id } = req.params;
+        const task = await Task.findById(id);
+        if (!task) {
+            return res.status(404).json({ success: false, message: "Task not found" });
+        }
+        return res.status(200).json(
+            new ApiResponse(
+                200,
+                task,
+                "Task fetched successfully",
+                true
+            )
+        )
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ success: false, message: "Internal server error" });
+    }
+})
+      
+
 module.exports = {
     createTask,
     updateTask,
     getTask,
     updateTaskStatus,
-    updateChecklist
+    updateChecklist,
+    getTaskAnalytics,
+    deleteTask,
+    getTaskById
 }
