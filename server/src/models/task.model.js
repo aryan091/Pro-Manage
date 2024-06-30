@@ -1,10 +1,5 @@
 const mongoose = require('mongoose');
 
-let Task;
-
-if (mongoose.connection.models['Task']) {
-    Task = mongoose.model('Task');
-} else {
     const taskSchema = new mongoose.Schema({
         title: {
             type: String,
@@ -44,6 +39,6 @@ if (mongoose.connection.models['Task']) {
     }, { timestamps: true });
 
     Task = mongoose.model('Task', taskSchema);
-}
+
 
 module.exports = Task;
