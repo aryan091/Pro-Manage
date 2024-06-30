@@ -3,8 +3,9 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const dotenv = require('dotenv').config()
-const userRoute = require('./routes/user.routes')
-const taskRoute = require('./routes/task.routes')
+
+const userRoute = require('./src/routes/user.routes')
+const taskRoute = require('./src/routes/task.routes')
 
 const app = express()
 

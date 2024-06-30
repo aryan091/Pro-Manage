@@ -9,7 +9,7 @@ const {
     getTaskAnalytics,
     deleteTask,
     getTaskById
-} = require('../controllers/taskController');
+} = require('../controllers/task.controller');
 const { verifyToken } = require("../middlewares/verifyJwtToken");
 
 router.post('/create', verifyToken, createTask);

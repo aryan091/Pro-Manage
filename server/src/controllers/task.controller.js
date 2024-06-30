@@ -2,10 +2,6 @@ const User = require("../models/user.model")
 const Task = require("../models/task.model")
 const asyncHandler = require("../utils/asyncHandler")
 const ApiResponse = require("../utils/ApiResponse")
-const ApiError = require("../utils/ApiError")
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const { decodeJwtToken , verifyToken } = require("../middlewares/verifyJwtToken")
 const moment = require('moment');
 
 // Function to get the start and end of the current week
@@ -361,7 +357,7 @@ const getTaskAnalytics = asyncHandler(async (req, res) => {
     }
 });
 
-cpnst deleteTask = asyncHandler(async (req, res) => {
+const deleteTask = asyncHandler(async (req, res) => {
     try {
         const { id } = req.params;
         const task = await Task.findById(id);
