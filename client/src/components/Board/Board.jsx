@@ -40,7 +40,7 @@ function Board() {
   const handleStatusChange = (taskTitle, newStatus) => {
     setTasks(prevTasks => {
       const updatedTasks = { ...prevTasks };
-
+  
       let taskToMove;
       for (const section in updatedTasks) {
         const taskIndex = updatedTasks[section].findIndex(task => task.title === taskTitle);
@@ -49,15 +49,18 @@ function Board() {
           break;
         }
       }
-
+  
       if (taskToMove) {
+        // Update the status of the task
+        taskToMove.status = newStatus;
         updatedTasks[newStatus].push(taskToMove);
       }
-
+  
+      console.log("Updated tasks:", taskToMove);
       return updatedTasks;
     });
   };
-
+  
   const updateChecklist = (taskTitle, checklistIndex, checked) => {
     setTasks(prevTasks => {
       const updatedTasks = { ...prevTasks };
@@ -135,7 +138,7 @@ function Board() {
           ))}
         </div>
       </div>
-      {isModalOpen && <CreateTaskModal closeModal={() => setIsModalOpen(false)} addTask={addTask} setIsModalOpen={setIsModalOpen} users={users} />}
+      {isModalOpen && <CreateTaskModal closeModal={() => setIsModalOpen(false)} addTask={addTask} setIsModalOpen={setIsModalOpen} users={users} status={'todo'} />}
       {isAddPeopleModalOpen && <AddPeopleModal closeModal={() => setIsAddPeopleModalOpen(false)} addUser={addUser} setIsModalOpen={setIsAddPeopleModalOpen} />}
     </div>
   );

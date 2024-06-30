@@ -6,7 +6,7 @@ import { RiArrowDropDownLine } from "react-icons/ri";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-const CreateTaskModal = ({ closeModal, addTask, users }) => {
+const CreateTaskModal = ({ closeModal, addTask, users , status }) => {
   const [title, setTitle] = useState("");
   const [selectedPriority, setSelectedPriority] = useState("");
   const [checklist, setChecklist] = useState([{ item: "", checked: false }]);
@@ -61,7 +61,10 @@ const CreateTaskModal = ({ closeModal, addTask, users }) => {
       checklist,
       dueDate: formatDate(dueDate),
       assignedTo: selectedUser,
+      status
     };
+
+    console.log("Task Details : ",newTask);
 
     addTask(newTask);
     closeModal();
