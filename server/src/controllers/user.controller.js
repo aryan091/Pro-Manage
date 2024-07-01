@@ -111,11 +111,12 @@ const loginUser = asyncHandler( async (req , res) => {
         .json(
             new ApiResponse(
                 200,
-                "User logged in successfully",
                 {
                     user : loggedInUser,
                     token:token
                 },
+                "User logged in successfully",
+                
                 
                 true
             )
