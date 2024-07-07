@@ -5,8 +5,13 @@ import boardIcon from '../../assets/board.png'
 import setting from '../../assets/settings.png'
 import { HiOutlineLogout } from "react-icons/hi";
 import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
+
 
 const SideBar = () => {
+
+  const navigate = useNavigate()
+
     return (
       <div className="w-[25%] h-full bg-white border-r border-gray-200 fixed flex flex-col">
         <div className="p-4 border-b border-gray-200">
@@ -28,10 +33,18 @@ const SideBar = () => {
           </Link>
         </nav>
         <div className="p-4 mt-auto mb-8">
-          <a href="#" className="flex items-center text-red-600 p-2 rounded hover:bg-gray-100">
-            <HiOutlineLogout className="w-6 h-6 mr-2" /> 
-            <span>Logout</span>
-          </a>
+          <div className="flex items-center text-red-600 p-2 rounded hover:bg-gray-100">
+            <HiOutlineLogout className="w-6 h-6 mr-2 cursor-pointer" onClick={() => {
+                localStorage.removeItem('token')
+                navigate('/');
+            }}/> 
+            <span  className='cursor-pointer' onClick={() => {
+                localStorage.removeItem('token')
+                navigate('/');
+            }}          
+
+            >Logout</span>
+          </div>
         </div>
       </div>
     );

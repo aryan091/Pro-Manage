@@ -20,7 +20,7 @@ const mongoose = require('mongoose');
             required: true,
         },
         dueDate: {
-            type: Date,
+            type: String,
             required: false,
         },
         assignedTo: {

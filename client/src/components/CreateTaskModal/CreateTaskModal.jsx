@@ -5,8 +5,11 @@ import { IoMdAdd } from "react-icons/io";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import axios from "axios";
+import { toast } from 'react-toastify';
 
-const CreateTaskModal = ({ closeModal, addTask, users , status }) => {
+
+const CreateTaskModal = ({ closeModal, addTask, users, status }) => {
   const [title, setTitle] = useState("");
   const [selectedPriority, setSelectedPriority] = useState("");
   const [checklist, setChecklist] = useState([{ item: "", checked: false }]);
@@ -14,14 +17,45 @@ const CreateTaskModal = ({ closeModal, addTask, users , status }) => {
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState("");
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [loading , setLoading] = useState(false);
   const datePickerRef = useRef(null);
   const userDropdownRef = useRef(null);
 
-  const handleUserSelection = (user) => {
+  const createTask = async (newTask) => {
+    console.log("New Task:", newTask);
+    setLoading(true);
+    try {
+      const reqUrl = `${import.meta.env.VITE_BACKEND_URL}/task/create`;
+      const token = localStorage.getItem('token');
+      axios.defaults.headers.common['Authorization'] = token;
+
+      const response = await axios.post(reqUrl, {
+        title: newTask.title,
+        priority: newTask.priority,
+        checklist: newTask.checklist,
+        dueDate: newTask.dueDate,
+        assignedTo: newTask.assignedTo,
+        status: newTask.status,
+    
+      });
+
+
+      console.log(response.data);
+      toast.success("Task created successfully");
+
+    }catch (error) {
+      console.error(error);
+      error.response?.data?.message || "Task Creation failed"
+      
+    } finally {
+      setLoading(false); 
+    }
+  };  const handleUserSelection = (user) => {
     setSelectedUser(user);
-    setIsUserDropdownOpen(false); // Close dropdown after selection
+    setIsUserDropdownOpen(false);
   };
-  
+
   const handlePriorityChange = (priority) => {
     setSelectedPriority(priority);
   };
@@ -52,22 +86,40 @@ const CreateTaskModal = ({ closeModal, addTask, users , status }) => {
 
   const checkedCount = checklist.filter((item) => item.checked).length;
 
-  const handleSaveTask = (event) => {
+  const validateFields = () => {
+    const newErrors = {};
+
+    if (!title.trim()) newErrors.title = "Title is required";
+    if (!selectedPriority) newErrors.priority = "Priority is required";
+    if (checklist.length === 0 || checklist.some(item => !item.item.trim())) {
+      newErrors.checklist = "Checklist items are required";
+    }
+
+    return newErrors;
+  };
+
+  const handleSaveTask = async (event) => {
     event.preventDefault();
 
-    const newTask = {
-      title,
-      priority: selectedPriority,
-      checklist,
-      dueDate: formatDate(dueDate),
-      assignedTo: selectedUser,
-      status
-    };
+    const validationErrors = validateFields();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+    } else {
+      setErrors({});
+      const newTask = {
+        title,
+        priority: selectedPriority,
+        checklist,
+        dueDate: formatDate(dueDate),
+        assignedTo: selectedUser,
+        status,
+      };
 
-    console.log("Task Details : ",newTask);
+      console.log("Task Details:", newTask);
 
-    addTask(newTask);
-    closeModal();
+      await createTask(newTask);
+      closeModal();
+    }
   };
 
   const handleClickOutside = (event) => {
@@ -101,8 +153,8 @@ const CreateTaskModal = ({ closeModal, addTask, users , status }) => {
   };
 
   const getInitials = (name) => {
-    const trimmedName = name.trim(); // Trim any leading or trailing whitespace
-    const initials = trimmedName.slice(0, 2).toUpperCase(); // Take the first two characters and convert to uppercase
+    const trimmedName = name.trim();
+    const initials = trimmedName.slice(0, 2).toUpperCase();
     return initials;
   };
 
@@ -117,8 +169,8 @@ const CreateTaskModal = ({ closeModal, addTask, users , status }) => {
   return (
     <div className="task-modal fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
       <div className="task-modal-content bg-white rounded-lg shadow-lg w-[644px] h-[596px] p-6 flex flex-col justify-between relative">
-        <form className="flex flex-col flex-grow">
-          <div>
+        <form className="flex flex-col flex-grow" onSubmit={handleSaveTask}>
+          <div className="flex-grow">
             <div className="task-title mb-4">
               <label
                 className="block text-gray-700 text-sm font-bold mb-2"
@@ -205,69 +257,69 @@ const CreateTaskModal = ({ closeModal, addTask, users , status }) => {
             </div>
 
             <div className="task-assignee mb-4">
-            <label
-              className="inline text-gray-700 text-sm font-bold mb-2 mr-2"
-              htmlFor="assignee"
-            >
-              Assign to
-            </label>
-            <div className="relative inline-block w-[88%]">
-            <div
-  id="assignee"
-  className="task-assignee-input shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline cursor-pointer"
->
-  {selectedUser ? (
-    <>
-      <span className="task-assignee-dropdown-item-text flex-grow text-gray-700 ml-2">
-        {selectedUser}
-      </span>
-    </>
-  ) : (
-    "Select an assignee"
-  )}
-</div>
-              <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                <RiArrowDropDownLine
-                  size={20}
-                  className={
-                    users.length === 0
-                      ? "text-gray-400 cursor-not-allowed"
-                      : "text-gray-500 cursor-pointer"
-                  }
-                  onClick={handleDropdownIconClick}
-                />
-              </div>
-              {isUserDropdownOpen && (
+              <label
+                className="inline text-gray-700 text-sm font-bold mb-2 mr-2"
+                htmlFor="assignee"
+              >
+                Assign to
+              </label>
+              <div className="relative inline-block w-[88%]">
                 <div
-                  ref={userDropdownRef}
-                  className="absolute mt-2 bg-[#FFFFFF] border border-gray-300 rounded-lg shadow-lg z-10 w-full max-h-48 overflow-y-auto custom-scrollbar"
+                  id="assignee"
+                  className="task-assignee-input shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline cursor-pointer"
+                  onClick={toggleUserDropdown}
                 >
-                  {users.map((user) => (
-                    <div
-                      key={user}
-                      className="flex items-center cursor-pointer px-4 py-2"
-                    >
-                      <div className="initials flex items-center justify-center w-12 h-12 rounded-full bg-[#FFEBEB] text-xl text-black font-semibold mr-2">
-                        {getInitials(user)}
-                      </div>
+                  {selectedUser ? (
+                    <>
                       <span className="task-assignee-dropdown-item-text flex-grow text-gray-700 ml-2">
-                        {user}
+                        {selectedUser}
                       </span>
-                      <button
-                        className="assign-button ml-auto px-3 py-1 w-40 h-8 bg-[#FFFFFF] text-[#767575] rounded-lg border-[2px]"
+                    </>
+                  ) : (
+                    "Select an assignee"
+                  )}
+                </div>
+                <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                  <RiArrowDropDownLine
+                    size={20}
+                    className={
+                      users.length === 0
+                        ? "text-gray-400 cursor-not-allowed"
+                        : "text-gray-500 cursor-pointer"
+                    }
+                    onClick={handleDropdownIconClick}
+                  />
+                </div>
+                {isUserDropdownOpen && (
+                  <div
+                    ref={userDropdownRef}
+                    className="absolute mt-2 bg-[#FFFFFF] border border-gray-300 rounded-lg shadow-lg z-10 w-full max-h-48 overflow-y-auto custom-scrollbar"
+                  >
+                    {users.map((user) => (
+                      <div
+                        key={user}
+                        className="flex items-center cursor-pointer px-4 py-2"
                         onClick={() => handleUserSelection(user)}
                       >
-                        Assign
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+                        <div className="initials flex items-center justify-center w-12 h-12 rounded-full bg-[#FFEBEB] text-xl text-black font-semibold mr-2">
+                          {getInitials(user)}
+                        </div>
+                        <span className="task-assignee-dropdown-item-text flex-grow text-gray-700 ml-2">
+                          {user}
+                        </span>
+                        <button
+                          className="assign-button ml-auto px-3 py-1 w-40 h-8 bg-[#FFFFFF] text-[#767575] rounded-lg border-[2px]"
+                        >
+                          Assign
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
 
-
-            <div className="task-checklist flex flex-col h-[18rem] mb-4 flex-grow overflow-y-auto custom-scrollbar">
+            <div className="task-checklist flex flex-col h-[17rem] mb-4 flex-grow overflow-y-auto custom-scrollbar">
               <span className="block text-gray-700 text-sm font-bold mb-2">
                 Checklist ({checkedCount}/{checklist.length}){" "}
                 <span className="text-red-500">*</span>
@@ -326,6 +378,13 @@ const CreateTaskModal = ({ closeModal, addTask, users , status }) => {
             </div>
           </div>
 
+          {Object.keys(errors).length > 0 && (
+            <p className="text-red-500 text-center font-bold text-sm mt-1">
+              All * fields are mandatory
+            </p>
+          )}
+
+
           <div className="task-modal-actions mt-4 flex justify-between relative">
             <button
               type="button"
@@ -345,7 +404,6 @@ const CreateTaskModal = ({ closeModal, addTask, users , status }) => {
               <button
                 type="submit"
                 className="task-save w-40 h-11 bg-[#17A2B8] text-white py-2 px-4 rounded-xl focus:outline-none focus:shadow-outline shadow-lg font-bold"
-                onClick={handleSaveTask}
               >
                 Save
               </button>

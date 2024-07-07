@@ -7,8 +7,15 @@ import TaskCard from '../TaskCard/TaskCard';
 import { SECTION_MAPPING } from '../../utils/SectionMapping';
 import CreateTaskModal from '../CreateTaskModal/CreateTaskModal';
 import AddPeopleModal from '../AddPeopleModal/AddPeopleModal';
+import axios from "axios";
 
 function Board() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddPeopleModalOpen, setIsAddPeopleModalOpen] = useState(false);
+  const [users, setUsers] = useState([]); // Add this line
+  const [filter, setFilter] = useState('This Week');
+  const [loading, setLoading] = useState(true);
+
   const [tasks, setTasks] = useState({
     backlog: [],
     todo: [],
@@ -23,12 +30,34 @@ function Board() {
     done: false,
   });
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isAddPeopleModalOpen, setIsAddPeopleModalOpen] = useState(false);
-  const [users, setUsers] = useState([]); // Add this line
-  const [filter, setFilter] = useState('This Week');
+  const fetchTasks = async () => {
+    setLoading(true);
+    try {
+      const reqUrl = `${import.meta.env.VITE_BACKEND_URL}/task/all-tasks`;
+      const token = localStorage.getItem('token');
+      axios.defaults.headers.common['Authorization'] = token;
 
-  console.log("users in board", users);
+      const response = await axios.get(reqUrl);
+      console.log(response.data);
+      const { data } = response.data;
+      const segregatedTasks = {
+        backlog: data.filter(task => task.status === 'backlog'),
+        todo: data.filter(task => task.status === 'todo'),
+        inProgress: data.filter(task => task.status === 'inProgress'),
+        done: data.filter(task => task.status === 'done'),
+      };
+  
+      setTasks(segregatedTasks);
+    } catch (error) {
+      console.error('Error fetching tasks:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTasks();
+  }, []);
 
   const toggleCollapseChecklists = (column) => {
     setCollapseChecklists({
@@ -37,28 +66,20 @@ function Board() {
     });
   };
 
-  const handleStatusChange = (taskTitle, newStatus) => {
-    setTasks(prevTasks => {
-      const updatedTasks = { ...prevTasks };
-
-      let taskToMove;
-      for (const section in updatedTasks) {
-        const taskIndex = updatedTasks[section].findIndex(task => task.title === taskTitle);
-        if (taskIndex !== -1) {
-          [taskToMove] = updatedTasks[section].splice(taskIndex, 1);
-          break;
-        }
-      }
-
-      if (taskToMove) {
-        // Update the status of the task
-        taskToMove.status = newStatus;
-        updatedTasks[newStatus].push(taskToMove);
-      }
-
-      console.log("Updated tasks:", taskToMove);
-      return updatedTasks;
-    });
+  const handleStatusChange = async (taskId, newStatus) => {
+    setLoading(true);
+    try {
+      const reqUrl = `${import.meta.env.VITE_BACKEND_URL}/task/update-status/${taskId}`;
+      const token = localStorage.getItem('token');
+      axios.defaults.headers.common['Authorization'] = token;
+      const response = await axios.put(reqUrl, { status: newStatus });
+      console.log(response.data);
+      fetchTasks();
+    } catch (error) {
+      console.error('Error updating task status:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const updateChecklist = (taskTitle, checklistIndex, checked) => {
@@ -77,19 +98,10 @@ function Board() {
     });
   };
 
-  const addTask = (newTask) => {
-    setTasks(prevTasks => ({
-      ...prevTasks,
-      todo: [...prevTasks.todo, newTask]
-    }));
-    setIsModalOpen(false);  // Close modal after adding task
-  };
-
   // Add this function to add a new user
   const addUser = (newUser) => {
     setUsers(prevUsers => [...prevUsers, newUser]);
   };
-
 
   return (
     <div className="w-[75%] h-full fixed ml-[25%] p-4">
@@ -137,12 +149,12 @@ function Board() {
                     title={task.title}
                     checklist={task.checklist}
                     date={task.dueDate}
-                    section={column}
+                    section={task.status}
                     collapseChecklists={collapseChecklists[column]}
                     handleStatusChange={handleStatusChange}
                     updateChecklist={updateChecklist}
                     assignedTo={task.assignedTo}
-                    users={users} // Pass users to TaskCard
+                    taskId={task._id} // Ensure taskId is passed correctly
                   />
                 ))}
               </div>
@@ -150,7 +162,7 @@ function Board() {
           ))}
         </div>
       </div>
-      {isModalOpen && <CreateTaskModal closeModal={() => setIsModalOpen(false)} addTask={addTask} setIsModalOpen={setIsModalOpen} users={users} status={'todo'} />}
+      {isModalOpen && <CreateTaskModal closeModal={() => setIsModalOpen(false)} setIsModalOpen={setIsModalOpen} users={users} status={'todo'} />}
       {isAddPeopleModalOpen && <AddPeopleModal closeModal={() => setIsAddPeopleModalOpen(false)} addUser={addUser} setIsModalOpen={setIsAddPeopleModalOpen} />}
     </div>
   );

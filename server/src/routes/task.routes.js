@@ -20,7 +20,7 @@ router.get('/all-tasks', verifyToken, getTask);
 
 router.get('/get-task/:id', verifyToken, getTaskById);
 
-router.put('/:id/updateStatus', verifyToken, updateTaskStatus);
+router.put('/update-status/:id', verifyToken, updateTaskStatus);
 
 router.put('/:id/updateChecklist', verifyToken, updateChecklist);
 

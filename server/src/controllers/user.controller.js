@@ -20,7 +20,6 @@ const registerUser = asyncHandler( async (req , res) => {
         ) {
             return res.status(401).json({ success: false, message: "All Fields are required" })        }
     
-        // check if user already exists: username, email
     
         const existedUser = await User.findOne({ email })
     
@@ -39,7 +38,6 @@ const registerUser = asyncHandler( async (req , res) => {
         const user = new User({ name, email, password: hashedPassword });
         await user.save();
             
-        // remove password and refresh token field from response
     
         const createdUser = await User.findById(user._id).select(
             "-password "

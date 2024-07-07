@@ -18,6 +18,7 @@ app.use(express.json())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+
 app.use("/api/v1/user",userRoute)
 app.use("/api/v1/task",taskRoute)
 

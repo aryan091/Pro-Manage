@@ -2,14 +2,18 @@ const User = require("../models/user.model")
 const Task = require("../models/task.model")
 const asyncHandler = require("../utils/asyncHandler")
 const ApiResponse = require("../utils/ApiResponse")
+const { Types: { ObjectId } } = require("mongoose"); 
+
 const moment = require('moment');
 
 // Function to get the start and end of the current week
 const getWeekRange = () => {
-  const startOfWeek = moment().startOf('week');
-  const endOfWeek = moment().endOf('week');
-  return { startOfWeek, endOfWeek };
-};
+    return {
+      start: moment().startOf('week'),
+      end: moment().endOf('week')
+    };
+  };
+  
 
 // Function to get the start and end of the current month
 const getMonthRange = () => {
@@ -32,10 +36,10 @@ const createTask = asyncHandler(async (req, res) => {
         }
     
         for(let check in checklist) {
-            if(!checklist[check].item || !checklist[check].checked) {
+            if(!checklist[check].item ) {
                 return res.status(400).json({
                     success: false,
-                    message: "All fields are required"
+                    message: "All fields are required in checklist"
                 })
             }
         }   
@@ -174,7 +178,7 @@ const updateTask = asyncHandler(async (req, res) => {
 const getTask = asyncHandler(async (req, res) => {
     try {
         const userId = req.userId;
-        const filter = req.query.filter || 'week'; // Default filter is 'week'
+        const filter = req.query.filter || 'today'; // Default filter is 'week'
 
         let dateRange;
       
@@ -191,16 +195,16 @@ const getTask = asyncHandler(async (req, res) => {
           case 'month':
             dateRange = getMonthRange();
             break;
-          default:
-            return res.status(400).json({ message: 'Invalid filter' });
+            default:
+                return res.status(400).json({ message: 'Invalid filter' });
         }
         try {
             const tasks = await Task.find({
               createdBy: userId,
-              dueDate: {
-                $gte: dateRange.start.toDate(),
-                $lte: dateRange.end.toDate()
-              }
+            //   dueDate: {
+            //     $gte: dateRange.start.toDate(),
+            //     $lte: dateRange.end.toDate()
+            //   }
             });
 
             return res.status(200).json(

@@ -6,12 +6,13 @@ import { Tooltip } from 'react-tooltip';
 import DeleteTaskModal from '../DeleteTaskModal/DeleteTaskModal';
 import './tooltip.css'; // Ensure this CSS file exists and contains necessary styles
 
-function TaskCard({ priority, title, checklist, date, section, collapseChecklists, handleStatusChange, updateChecklist, assignedTo }) {
+function TaskCard({ priority, title, checklist, date, section, collapseChecklists, handleStatusChange, updateChecklist, assignedTo ,taskId}) {
   const [isChecklistVisible, setIsChecklistVisible] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const popupRef = useRef(null);
+  
 
   useEffect(() => {
     if (collapseChecklists) {
@@ -123,12 +124,14 @@ function TaskCard({ priority, title, checklist, date, section, collapseChecklist
   } else {
     if (taskDueDate < today) {
       dueDateColorClass = 'bg-[#CF3636]'; 
-      dueDateTextColorClass = 'text-white font-bold'; 
+      dueDateTextColorClass = 'text-[#FFFFFF] font-bold'; 
     } else {
       dueDateColorClass = 'bg-gray-200'; 
       dueDateTextColorClass = 'text-[#5A5A5A] font-bold';
     }
   }
+
+  console.log("Task id: ", typeof(taskId));
 
   return (
     <div className="task-card p-4 bg-white rounded-lg shadow-sm relative">
@@ -204,10 +207,10 @@ function TaskCard({ priority, title, checklist, date, section, collapseChecklist
       )}
       {date !== 'Select Due Date' ? (
         <div className="flex items-center justify-between text-sm">
-          <button className={`w-16 h-7 bg-[#CF3636] text-[10px] text-white rounded-xl ${dueDateColorClass} ${dueDateTextColorClass}`}>{formatDateString(date)}</button>
+          <button className={`w-16 h-7 bg-[#CF3636] text-[10px]  rounded-xl ${dueDateColorClass} ${dueDateTextColorClass}`}>{formatDateString(date)}</button>
           <div className="status-tiles flex space-x-2 text-[10px] rounded-xl">
             {statusTiles.map((status, index) => (
-              <button key={index} className="px-2 py-1 bg-gray-200 rounded-xl" onClick={() => handleStatusChange(title, status)}>{STATUS_MAPPING[status]}</button>
+              <button key={index} className="px-2 py-1 bg-gray-200 rounded-xl" onClick={() => handleStatusChange(taskId, status)}>{STATUS_MAPPING[status]}</button>
             ))}
           </div>
         </div>
@@ -216,7 +219,7 @@ function TaskCard({ priority, title, checklist, date, section, collapseChecklist
           <button className="w-16 h-7 display-none text-[10px] text-white rounded-xl"></button>
           <div className="status-tiles flex space-x-2 text-[10px] rounded-xl">
             {statusTiles.map((status, index) => (
-              <button key={index} className="px-2 py-1 bg-gray-200 rounded-xl" onClick={() => handleStatusChange(title, status)}>{STATUS_MAPPING[status]}</button>
+              <button key={index} className="px-2 py-1 bg-gray-200 rounded-xl" onClick={() => handleStatusChange(taskId, status)}>{STATUS_MAPPING[status]}</button>
             ))}
           </div>
         </div>
