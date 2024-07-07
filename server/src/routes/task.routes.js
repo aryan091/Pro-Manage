@@ -14,7 +14,7 @@ const { verifyToken } = require("../middlewares/verifyJwtToken");
 
 router.post('/create', verifyToken, createTask);
 
-router.put('/:id/update', verifyToken, updateTask);
+router.put('/update/:id', verifyToken, updateTask);
 
 router.get('/all-tasks', verifyToken, getTask);
 
@@ -22,10 +22,10 @@ router.get('/get-task/:id', verifyToken, getTaskById);
 
 router.put('/update-status/:id', verifyToken, updateTaskStatus);
 
-router.put('/:id/updateChecklist', verifyToken, updateChecklist);
+router.put('/updateChecklist/:id', verifyToken, updateChecklist);
 
 router.get('/analytics', verifyToken, getTaskAnalytics);
 
-router.delete('/:id/delete', verifyToken, deleteTask);
+router.delete('/delete/:id', verifyToken, deleteTask);
 
 module.exports = router;

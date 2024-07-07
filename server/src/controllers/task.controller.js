@@ -2,7 +2,7 @@ const User = require("../models/user.model")
 const Task = require("../models/task.model")
 const asyncHandler = require("../utils/asyncHandler")
 const ApiResponse = require("../utils/ApiResponse")
-const { Types: { ObjectId } } = require("mongoose"); 
+const mongoose = require('mongoose');
 
 const moment = require('moment');
 
@@ -229,29 +229,43 @@ const updateTaskStatus = asyncHandler(async (req, res) => {
     try {
         const { status } = req.body;
         const taskId = req.params.id;
-        
+
+        if (!mongoose.Types.ObjectId.isValid(taskId)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid Task ID",
+            });
+        }
+
         const task = await Task.findById(taskId);
-        
+
         if (!task) {
             return res.status(404).json({
                 success: false,
-                message: "Task not found"
+                message: "Task not found",
             });
         }
+
         task.status = status;
 
+        // if (task.assignedTo && !mongoose.Types.ObjectId.isValid(task.assignedTo)) {
+        //     return res.status(400).json({
+        //         success: false,
+        //         message: "Invalid assignedTo ID",
+        //     });
+        // }
 
-        const assignedUser = await User.findById(task.assignedTo); // Assuming assignedTo holds the user ID
-        if (assignedUser) {
-            // Update user's view of the task (could update status or any other relevant field)
-            const taskIndex = assignedUser.tasks.findIndex(task => task.taskId.toString() === taskId.toString());
-            if (taskIndex !== -1) {
-                assignedUser.tasks[taskIndex].status = status;
-            }
-        }
+        // const assignedUser = await User.findById(task.assignedTo);
+        // if (assignedUser) {
+        //     const taskIndex = assignedUser.tasks.findIndex(task => task.toString() === taskId);
+        //     if (taskIndex !== -1) {
+        //         // Assuming tasks is an array of task IDs, not objects with status property
+        //         assignedUser.tasks[taskIndex] = taskId;
+        //         await assignedUser.save();
+        //     }
+        // }
 
         const updatedTask = await task.save();
-
 
         return res.status(200).json(
             new ApiResponse(
@@ -265,14 +279,14 @@ const updateTaskStatus = asyncHandler(async (req, res) => {
         console.log(error);
         return res.status(500).json({
             success: false,
-            message: "Internal server error"
+            message: "Internal server error",
         });
-    } 
+    }
 });
 
 const updateChecklist = asyncHandler(async (req, res) => {
     try {
-        const { checklist } = req.body;
+        const { checklistIndex, checked } = req.body;
         const taskId = req.params.id;
         
         const task = await Task.findById(taskId);
@@ -283,8 +297,18 @@ const updateChecklist = asyncHandler(async (req, res) => {
                 message: "Task not found"
             });
         }
-        task.checklist = checklist;
+
+        if (checklistIndex < 0 || checklistIndex >= task.checklist.length) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid checklist index"
+            });
+        }
+
+        // Update the specific checklist item's checked status
+        task.checklist[checklistIndex].checked = checked;
         const updatedTask = await task.save();
+
         return res.status(200).json(
             new ApiResponse(
                 200,
@@ -301,6 +325,7 @@ const updateChecklist = asyncHandler(async (req, res) => {
         });
     } 
 });
+
 
 const getTaskAnalytics = asyncHandler(async (req, res) => {
     try {

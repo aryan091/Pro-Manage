@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 // Define the schema for tasks
-const taskSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -22,4 +22,4 @@ const taskSchema = new mongoose.Schema({
   ],
 }, { timestamps: true });
 
-module.exports = mongoose.model("User", taskSchema);
+module.exports = mongoose.model("User", userSchema);

@@ -6,12 +6,19 @@ import { Tooltip } from 'react-tooltip';
 import DeleteTaskModal from '../DeleteTaskModal/DeleteTaskModal';
 import './tooltip.css'; // Ensure this CSS file exists and contains necessary styles
 
+
 function TaskCard({ priority, title, checklist, date, section, collapseChecklists, handleStatusChange, updateChecklist, assignedTo ,taskId}) {
   const [isChecklistVisible, setIsChecklistVisible] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const popupRef = useRef(null);
+
+  if (typeof taskId !== 'string' || !taskId.match(/^[0-9a-fA-F]{24}$/)) {
+    console.error('Invalid taskId:', taskId);
+    return null; // Return null or an error message to avoid rendering the component with an invalid ID
+  }
+
   
 
   useEffect(() => {
@@ -43,8 +50,7 @@ function TaskCard({ priority, title, checklist, date, section, collapseChecklist
   };
 
   const handleCheckboxChange = (index) => {
-    const newCheckedStatus = !checklist[index].checked;
-    updateChecklist(title, index, newCheckedStatus);
+    updateChecklist(taskId, index, !checklist[index].checked);
   };
 
   const handleDeleteTask = () => {
@@ -53,8 +59,8 @@ function TaskCard({ priority, title, checklist, date, section, collapseChecklist
   };
 
   const getInitials = (name) => {
-    const trimmedName = name.trim(); // Trim any leading or trailing whitespace
-    const initials = trimmedName.slice(0, 2).toUpperCase(); // Take the first two characters and convert to uppercase
+    const trimmedName = name.trim(); 
+    const initials = trimmedName.slice(0, 2).toUpperCase();
     return initials;
   };
 
@@ -114,14 +120,10 @@ function TaskCard({ priority, title, checklist, date, section, collapseChecklist
   let dueDateTextColorClass = '';
 
   if (section === 'done') {
-    if (taskDueDate < today) {
       dueDateColorClass = 'bg-[#63C05B]'; 
-      dueDateTextColorClass = 'text-white'; 
-    } else {
-      dueDateColorClass = 'bg-[#DBDBDB]'; 
-      dueDateTextColorClass = 'text-[#5A5A5A]'; 
+      dueDateTextColorClass = 'text-white font-bold'; 
     }
-  } else {
+   else {
     if (taskDueDate < today) {
       dueDateColorClass = 'bg-[#CF3636]'; 
       dueDateTextColorClass = 'text-[#FFFFFF] font-bold'; 
@@ -207,7 +209,7 @@ function TaskCard({ priority, title, checklist, date, section, collapseChecklist
       )}
       {date !== 'Select Due Date' ? (
         <div className="flex items-center justify-between text-sm">
-          <button className={`w-16 h-7 bg-[#CF3636] text-[10px]  rounded-xl ${dueDateColorClass} ${dueDateTextColorClass}`}>{formatDateString(date)}</button>
+          <button className={`w-16 h-7  text-[10px]  rounded-xl ${dueDateColorClass} ${dueDateTextColorClass}`}>{formatDateString(date)}</button>
           <div className="status-tiles flex space-x-2 text-[10px] rounded-xl">
             {statusTiles.map((status, index) => (
               <button key={index} className="px-2 py-1 bg-gray-200 rounded-xl" onClick={() => handleStatusChange(taskId, status)}>{STATUS_MAPPING[status]}</button>

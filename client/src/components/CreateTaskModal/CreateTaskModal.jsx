@@ -7,9 +7,10 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
 import { toast } from 'react-toastify';
+import { useLocation, useNavigate } from 'react-router-dom'; // Import the hooks
 
 
-const CreateTaskModal = ({ closeModal, addTask, users, status }) => {
+const CreateTaskModal = ({ closeModal, addTask, users, status,fetchTasks }) => {
   const [title, setTitle] = useState("");
   const [selectedPriority, setSelectedPriority] = useState("");
   const [checklist, setChecklist] = useState([{ item: "", checked: false }]);
@@ -22,40 +23,48 @@ const CreateTaskModal = ({ closeModal, addTask, users, status }) => {
   const datePickerRef = useRef(null);
   const userDropdownRef = useRef(null);
 
+  const { state } = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (state?.edit && state?.task) {
+      const task = state.task;
+      setTitle(task.title);
+      setSelectedPriority(task.priority);
+      setChecklist(task.checklist);
+      setDueDate(new Date(task.dueDate));
+      setSelectedUser(task.assignedTo);
+    }
+  }, [state]);
+
+
   const createTask = async (newTask) => {
     console.log("New Task:", newTask);
     setLoading(true);
     try {
-      const reqUrl = `${import.meta.env.VITE_BACKEND_URL}/task/create`;
       const token = localStorage.getItem('token');
       axios.defaults.headers.common['Authorization'] = token;
 
-      const response = await axios.post(reqUrl, {
-        title: newTask.title,
-        priority: newTask.priority,
-        checklist: newTask.checklist,
-        dueDate: newTask.dueDate,
-        assignedTo: newTask.assignedTo,
-        status: newTask.status,
-    
-      });
-
-
-      console.log(response.data);
-      toast.success("Task created successfully");
-
-    }catch (error) {
+      if (state?.edit) {
+        // Update existing task
+        const url = `${import.meta.env.VITE_BACKEND_URL}/task/update/${state.task._id}`;
+        const response = await axios.put(url, newTask);
+        console.log('Task Updated:', response.data);
+      } else {
+        // Create new task
+        const url = `${import.meta.env.VITE_BACKEND_URL}/task/create`;
+        const response = await axios.post(url, newTask);
+        console.log('Task Created:', response.data);
+      }
+      toast.success(state?.edit ? "Task updated successfully" : "Task created successfully");
+      fetchTasks()
+    } catch (error) {
       console.error(error);
-      error.response?.data?.message || "Task Creation failed"
-      
+      toast.error(error.response?.data?.message || "Task operation failed");
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
-  };  const handleUserSelection = (user) => {
-    setSelectedUser(user);
-    setIsUserDropdownOpen(false);
   };
-
   const handlePriorityChange = (priority) => {
     setSelectedPriority(priority);
   };

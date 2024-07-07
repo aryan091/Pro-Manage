@@ -6,11 +6,13 @@ import Dashboard from './components/Board/Board';
 import Analytics from './components/Analytics/Analytics';
 import Settings from './components/Settings/Settings';
 import ViewTask from './components/ViewTask/ViewTask';
+import { UserContextProvider } from './context/UserContext';
 import { ToastContainer , Bounce } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
+    <UserContextProvider>
     <Router>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -39,6 +41,7 @@ function App() {
             transition={Bounce} />
 
     </Router>
+    </UserContextProvider>
   );
 }
 

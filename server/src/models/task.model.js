@@ -29,7 +29,7 @@ const mongoose = require('mongoose');
         },
         status: {
             type: String,
-            enum: ['todo', 'in-progress', 'done', 'backlog'],
+            enum: ['todo', 'inProgress', 'done', 'backlog'],
             default: 'todo'
         },
         createdBy: {

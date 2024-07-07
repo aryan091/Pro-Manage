@@ -8,6 +8,8 @@ import { SECTION_MAPPING } from '../../utils/SectionMapping';
 import CreateTaskModal from '../CreateTaskModal/CreateTaskModal';
 import AddPeopleModal from '../AddPeopleModal/AddPeopleModal';
 import axios from "axios";
+import { toast } from 'react-toastify';
+
 
 function Board() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -73,6 +75,8 @@ function Board() {
       const token = localStorage.getItem('token');
       axios.defaults.headers.common['Authorization'] = token;
       const response = await axios.put(reqUrl, { status: newStatus });
+      toast.success(`Task Updated Successfully`);
+
       console.log(response.data);
       fetchTasks();
     } catch (error) {
@@ -82,20 +86,26 @@ function Board() {
     }
   };
 
-  const updateChecklist = (taskTitle, checklistIndex, checked) => {
-    setTasks(prevTasks => {
-      const updatedTasks = { ...prevTasks };
+  const updateChecklist  = async (taskId, checklistIndex, checked) => {
+    setLoading(true)
+    
+    try {
+      const reqUrl = `${import.meta.env.VITE_BACKEND_URL}/task/updateChecklist/${taskId}`;
+      const token = localStorage.getItem('token');
+      axios.defaults.headers.common['Authorization'] = token;
 
-      for (const section in updatedTasks) {
-        const taskIndex = updatedTasks[section].findIndex(task => task.title === taskTitle);
-        if (taskIndex !== -1) {
-          updatedTasks[section][taskIndex].checklist[checklistIndex].checked = checked;
-          break;
-        }
-      }
+      const response = await axios.put(reqUrl, { checklistIndex, checked });
+      console.log('Checklist updated:', response.data);
+      toast.success(`Task Updated Successfully`);
 
-      return updatedTasks;
-    });
+      fetchTasks();
+      
+    } catch (error) {
+      console.log('Error updating task status:', error)
+    }finally{
+      setLoading(false);
+    }
+    
   };
 
   // Add this function to add a new user
@@ -162,7 +172,7 @@ function Board() {
           ))}
         </div>
       </div>
-      {isModalOpen && <CreateTaskModal closeModal={() => setIsModalOpen(false)} setIsModalOpen={setIsModalOpen} users={users} status={'todo'} />}
+      {isModalOpen && <CreateTaskModal closeModal={() => setIsModalOpen(false)} setIsModalOpen={setIsModalOpen} users={users} status={'todo'} fetchTasks={fetchTasks} />}
       {isAddPeopleModalOpen && <AddPeopleModal closeModal={() => setIsAddPeopleModalOpen(false)} addUser={addUser} setIsModalOpen={setIsAddPeopleModalOpen} />}
     </div>
   );
