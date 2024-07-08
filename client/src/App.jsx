@@ -19,6 +19,8 @@ function App() {
 
           <Route path="/app/*" element={<MainLayout />}>
             <Route path="dashboard" element={<Dashboard />} />
+            <Route path="dashboard/create-task" element={<Dashboard />} />
+
             <Route path="analytics" element={<Analytics />} />
             <Route path="settings" element={<Settings />} />
           </Route>

@@ -11,18 +11,14 @@ export function UserContextProvider({ children }) {
   useEffect(() => {
     const getUser = async () => {
       try {
-        console.log('useEffect in UserContext is running'); // Debug log
         const token = localStorage.getItem("token");
-        console.log('Token in UserContext:', token); // Debug log
         if (token) {
           axios.defaults.headers.common["Authorization"] = token;
           const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/user/profile`);
-          console.log('User data:', response.data.data.name); // Debug log
           setIsUserLoggedIn(true);
           setUsername(response.data.data.name);
           setId(response.data.data._id);
         } else {
-          console.log('No token found');
           setIsUserLoggedIn(false);
           setUsername(null);
           setId(null);

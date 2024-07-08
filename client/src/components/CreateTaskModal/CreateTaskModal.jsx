@@ -14,26 +14,30 @@ const CreateTaskModal = ({ closeModal, addTask, users, status,fetchTasks }) => {
   const [title, setTitle] = useState("");
   const [selectedPriority, setSelectedPriority] = useState("");
   const [checklist, setChecklist] = useState([{ item: "", checked: false }]);
-  const [dueDate, setDueDate] = useState(null);
+  const [dueDate, setDueDate] = useState("");
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState("");
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [errors, setErrors] = useState({});
   const [loading , setLoading] = useState(false);
+  const [taskStatus , setTaskStatus] = useState(status)
   const datePickerRef = useRef(null);
   const userDropdownRef = useRef(null);
 
   const { state } = useLocation();
   const navigate = useNavigate();
 
+
   useEffect(() => {
     if (state?.edit && state?.task) {
       const task = state.task;
       setTitle(task.title);
+      
       setSelectedPriority(task.priority);
       setChecklist(task.checklist);
-      setDueDate(new Date(task.dueDate));
+      setDueDate(new Date(task.dueDate)); // Ensure dueDate is initialized correctly
       setSelectedUser(task.assignedTo);
+      setTaskStatus(task.status)
     }
   }, [state]);
 
@@ -121,7 +125,7 @@ const CreateTaskModal = ({ closeModal, addTask, users, status,fetchTasks }) => {
         checklist,
         dueDate: formatDate(dueDate),
         assignedTo: selectedUser,
-        status,
+        status:taskStatus,
       };
 
       console.log("Task Details:", newTask);
@@ -176,7 +180,7 @@ const CreateTaskModal = ({ closeModal, addTask, users, status,fetchTasks }) => {
   };
 
   return (
-    <div className="task-modal fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+    <div className="task-modal fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-10">
       <div className="task-modal-content bg-white rounded-lg shadow-lg w-[644px] h-[596px] p-6 flex flex-col justify-between relative">
         <form className="flex flex-col flex-grow" onSubmit={handleSaveTask}>
           <div className="flex-grow">

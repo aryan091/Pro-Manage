@@ -132,7 +132,6 @@ const getUserProfile = asyncHandler( async (req, res) => {
     try {
         const userId = decodeJwtToken(req.headers["authorization"]);
 
-        console.log("get user profile", userId)
 
         if (!userId) {
             return res.status(401).json({ success: false, message: "User Not logged in" })
@@ -146,7 +145,6 @@ const getUserProfile = asyncHandler( async (req, res) => {
             return res.status(401).json({ success: false, message: "User Not found " })
         }
         
-        console.log("User fetched - ",user)
 
         return res
         .status(200)

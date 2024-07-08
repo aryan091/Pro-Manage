@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom'; // Import useNavigate and useLocation
 import collapse from '../../assets/collapse.png';
 import { HiOutlineUserAdd } from 'react-icons/hi';
 import { IoMdAdd } from "react-icons/io";
@@ -11,16 +12,14 @@ import axios from "axios";
 import { toast } from 'react-toastify';
 import { UserContext } from '../../context/UserContext';
 
-
 function Board() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddPeopleModalOpen, setIsAddPeopleModalOpen] = useState(false);
-  const [users, setUsers] = useState([]); // Add this line
+  const [users, setUsers] = useState([]);
   const [filter, setFilter] = useState('This Week');
   const [loading, setLoading] = useState(true);
 
-  const {username} = useContext(UserContext)
-  console.log("Context in username : ",username)
+  const { username } = useContext(UserContext);
+  console.log("Context in username : ", username);
 
   const [tasks, setTasks] = useState({
     backlog: [],
@@ -35,6 +34,9 @@ function Board() {
     inProgress: false,
     done: false,
   });
+
+  const navigate = useNavigate(); // Initialize useNavigate
+  const location = useLocation(); // Initialize useLocation
 
   const fetchTasks = async () => {
     setLoading(true);
@@ -52,7 +54,7 @@ function Board() {
         inProgress: data.filter(task => task.status === 'inProgress'),
         done: data.filter(task => task.status === 'done'),
       };
-  
+
       setTasks(segregatedTasks);
     } catch (error) {
       console.error('Error fetching tasks:', error);
@@ -90,9 +92,9 @@ function Board() {
     }
   };
 
-  const updateChecklist  = async (taskId, checklistIndex, checked) => {
-    setLoading(true)
-    
+  const updateChecklist = async (taskId, checklistIndex, checked) => {
+    setLoading(true);
+
     try {
       const reqUrl = `${import.meta.env.VITE_BACKEND_URL}/task/updateChecklist/${taskId}`;
       const token = localStorage.getItem('token');
@@ -103,18 +105,47 @@ function Board() {
       toast.success(`Task Updated Successfully`);
 
       fetchTasks();
-      
+
     } catch (error) {
-      console.log('Error updating task status:', error)
-    }finally{
+      console.log('Error updating task status:', error);
+    } finally {
       setLoading(false);
     }
-    
+
   };
 
-  // Add this function to add a new user
+  const deleteTask = async (taskId) => {
+    setLoading(true)
+    try {
+      const reqUrl = `${import.meta.env.VITE_BACKEND_URL}/task/delete/${taskId}`;
+      const token = localStorage.getItem('token');
+      axios.defaults.headers.common['Authorization'] = token;
+
+      const response = await axios.delete(reqUrl)
+      console.log(response.data)
+      toast.success(`Task Deleted Successfully`);
+
+      fetchTasks();
+      
+    } catch (error) {
+      console.log('Error while deleting task status:', error);
+
+    }finally{
+      setLoading(false);
+
+    }
+  }
+
   const addUser = (newUser) => {
     setUsers(prevUsers => [...prevUsers, newUser]);
+  };
+
+  const handleCreateTaskClick = () => {
+    navigate('/app/dashboard/create-task');
+  };
+
+  const closeModal = () => {
+    navigate('/app/dashboard');
   };
 
   return (
@@ -150,7 +181,7 @@ function Board() {
                 <h3 className="text-lg font-semibold">{SECTION_MAPPING[column]}</h3>
                 <div className='add-task-section flex gap-2'>
                   {column === 'todo' && (
-                    <IoMdAdd size={24} className="cursor-pointer" onClick={() => setIsModalOpen(true)} />
+                    <IoMdAdd size={24} className="cursor-pointer" onClick={handleCreateTaskClick} />
                   )}
                   <img src={collapse} alt="Collapse" className="w-6 h-6 cursor-pointer" onClick={() => toggleCollapseChecklists(column)} />
                 </div>
@@ -168,7 +199,9 @@ function Board() {
                     handleStatusChange={handleStatusChange}
                     updateChecklist={updateChecklist}
                     assignedTo={task.assignedTo}
-                    taskId={task._id} // Ensure taskId is passed correctly
+                    taskId={task._id}
+                    task={task}
+                    deleteTask = {deleteTask}
                   />
                 ))}
               </div>
@@ -176,8 +209,10 @@ function Board() {
           ))}
         </div>
       </div>
-      {isModalOpen && <CreateTaskModal closeModal={() => setIsModalOpen(false)} setIsModalOpen={setIsModalOpen} users={users} status={'todo'} fetchTasks={fetchTasks} />}
-      {isAddPeopleModalOpen && <AddPeopleModal closeModal={() => setIsAddPeopleModalOpen(false)} addUser={addUser} setIsModalOpen={setIsAddPeopleModalOpen} />}
+      {location.pathname === '/app/dashboard/create-task' && (
+        <CreateTaskModal closeModal={closeModal} users={users} status={'todo'} fetchTasks={fetchTasks} />
+      )}
+      {isAddPeopleModalOpen && <AddPeopleModal closeModal={() => setIsAddPeopleModalOpen(false)} addUser={addUser} />}
     </div>
   );
 }

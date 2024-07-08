@@ -5,12 +5,14 @@ import { STATUS_MAPPING } from '../../utils/StatusCardMapping';
 import { Tooltip } from 'react-tooltip';
 import DeleteTaskModal from '../DeleteTaskModal/DeleteTaskModal';
 import './tooltip.css'; // Ensure this CSS file exists and contains necessary styles
+import { useNavigate } from 'react-router-dom';
 
 
-function TaskCard({ priority, title, checklist, date, section, collapseChecklists, handleStatusChange, updateChecklist, assignedTo ,taskId}) {
+function TaskCard({ priority, title, checklist, date, section, collapseChecklists, handleStatusChange, updateChecklist, assignedTo ,taskId,task , deleteTask}) {
   const [isChecklistVisible, setIsChecklistVisible] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
 
   const popupRef = useRef(null);
 
@@ -19,6 +21,7 @@ function TaskCard({ priority, title, checklist, date, section, collapseChecklist
     return null; // Return null or an error message to avoid rendering the component with an invalid ID
   }
 
+  const navigate = useNavigate()
   
 
   useEffect(() => {
@@ -133,7 +136,9 @@ function TaskCard({ priority, title, checklist, date, section, collapseChecklist
     }
   }
 
-  console.log("Task id: ", typeof(taskId));
+const handleEdit = (task) => {
+  navigate('/app/dashboard/create-task' , { state: { task: task, edit: true } })
+}
 
   return (
     <div className="task-card p-4 bg-white rounded-lg shadow-sm relative">
@@ -158,7 +163,7 @@ function TaskCard({ priority, title, checklist, date, section, collapseChecklist
       {isPopupVisible && (
         <div ref={popupRef} className="popup-menu absolute top-6 right-0 bg-white shadow-md rounded-lg">
           <ul className="list-none m-0 p-2 w-44 h-28">
-            <li className="py-1 px-4 hover:bg-gray-100 cursor-pointer text-sm font-bold ">Edit</li>
+            <li className="py-1 px-4 hover:bg-gray-100 cursor-pointer text-sm font-bold " onClick={()=> handleEdit(task)}>Edit</li>
             <li className="py-1 px-4 hover:bg-gray-100 cursor-pointer text-sm font-bold">Share</li>
             <li className="py-1 px-4 hover:bg-gray-100 cursor-pointer text-red-500 text-sm font-bold" onClick={handleDeleteTask}>Delete</li>
           </ul>
@@ -226,7 +231,7 @@ function TaskCard({ priority, title, checklist, date, section, collapseChecklist
           </div>
         </div>
       )}
-      {isDeleteModalOpen && <DeleteTaskModal closeModal={() => setIsDeleteModalOpen(false)} />}
+      {isDeleteModalOpen && <DeleteTaskModal closeModal={() => setIsDeleteModalOpen(false)}  deleteTask={deleteTask} taskId={taskId}/>}
     </div>
   );
 }

@@ -20,6 +20,12 @@ const userSchema = new mongoose.Schema({
       ref: 'Task',
     },
   ],
+  board: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+  ],
 }, { timestamps: true });
 
 module.exports = mongoose.model("User", userSchema);
