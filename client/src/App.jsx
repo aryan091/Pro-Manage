@@ -1,4 +1,5 @@
-import {UserContext ,  UserContextProvider } from "./context/UserContext";
+// App.js
+import { UserContextProvider } from "./context/UserContext";
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './components/Home/Home';
 import MainLayout from './components/MainLayout/MainLayout';
@@ -15,13 +16,16 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
+
           <Route path="/app/*" element={<MainLayout />}>
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="analytics" element={<Analytics />} />
             <Route path="settings" element={<Settings />} />
           </Route>
+
           <Route path="/public" element={<ViewTask />} />
         </Routes>
+
         <ToastContainer
           position="top-right"
           autoClose={5000}
