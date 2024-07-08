@@ -40,6 +40,7 @@ const decodeJwtToken = (authHeader) => {
         }
 
         return userId;
+    
         
     } catch (error) {
         console.log("Error decoding JWT token:", error);

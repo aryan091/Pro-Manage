@@ -1,4 +1,4 @@
-import React from 'react'
+import React , {useContext} from 'react'
 import logo from '../../assets/icon.png'
 import database from '../../assets/database.png'
 import boardIcon from '../../assets/board.png'
@@ -6,9 +6,13 @@ import setting from '../../assets/settings.png'
 import { HiOutlineLogout } from "react-icons/hi";
 import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom';
+import { UserContext } from '../../context/UserContext';
+
 
 
 const SideBar = () => {
+
+  const { setUsername, setId, setIsUserLoggedIn } = useContext(UserContext);
 
   const navigate = useNavigate()
 
@@ -34,14 +38,22 @@ const SideBar = () => {
         </nav>
         <div className="p-4 mt-auto mb-8">
           <div className="flex items-center text-red-600 p-2 rounded hover:bg-gray-100">
-            <HiOutlineLogout className="w-6 h-6 mr-2 cursor-pointer" onClick={() => {
+            <HiOutlineLogout className="w-6 h-6 mr-2 cursor-pointer"             onClick={() => {
                 localStorage.removeItem('token')
+                setIsUserLoggedIn(false)
+                setId(null)
+                setUsername(null)
                 navigate('/');
-            }}/> 
-            <span  className='cursor-pointer' onClick={() => {
+            }}
+/> 
+            <span  className='cursor-pointer'             onClick={() => {
                 localStorage.removeItem('token')
+                setIsUserLoggedIn(false)
+                setId(null)
+                setUsername(null)
                 navigate('/');
-            }}          
+            }}
+
 
             >Logout</span>
           </div>

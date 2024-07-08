@@ -4,7 +4,6 @@ import axios from 'axios';
 export const UserContext = createContext({});
 
 export function UserContextProvider({ children }) {
-
   const [username, setUsername] = useState(null);
   const [id, setId] = useState(null);
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
@@ -12,29 +11,32 @@ export function UserContextProvider({ children }) {
   useEffect(() => {
     const getUser = async () => {
       try {
+        console.log('useEffect in UserContext is running'); // Debug log
         const token = localStorage.getItem("token");
-        console.log("Token -", token);
+        console.log('Token in UserContext:', token); // Debug log
         if (token) {
-          axios.defaults.headers.common["Authorization"] = token;
+          axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
           const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/user/profile`);
+          console.log('User data:', response.data.data.user); // Debug log
           setIsUserLoggedIn(true);
-          setUsername(response.data.data.name);
-          setId(response.data.data._id);
+          setUsername(response.data.data.user.name);
+          setId(response.data.data.user._id);
         } else {
+          console.log('No token found');
           setIsUserLoggedIn(false);
           setUsername(null);
           setId(null);
         }
       } catch (error) {
-        console.log(error.response.data.message);
+        console.log('Error fetching user profile:', error.response ? error.response.data.message : error.message);
       }
     };
+
     getUser();
-  }, [setIsUserLoggedIn, setUsername, setId]);
-  
-console.log(isUserLoggedIn, username)
+  }, []); // Ensure this dependency array is empty
+
   return (
-    <UserContext.Provider value={{ username, setUsername, id, setId , isUserLoggedIn, setIsUserLoggedIn }}>
+    <UserContext.Provider value={{ username, setUsername, id, setId, isUserLoggedIn, setIsUserLoggedIn }}>
       {children}
     </UserContext.Provider>
   );

@@ -2,7 +2,6 @@ import React from 'react'
 import SideBar from '../SideBar/SideBar'
 import { Outlet } from 'react-router-dom';
 
-import Settings from '../Settings/Settings'
 const MainLayout = () => {
   return (
     <div className="main-layout flex w-full h-full">

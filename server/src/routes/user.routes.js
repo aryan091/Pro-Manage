@@ -6,7 +6,7 @@ const {
     getUserProfile,
     updateDetails
 } = require('../controllers/user.controller');
-const { verifyToken } = require("../middlewares/verifyJwtToken");
+const { verifyToken , decodeJwtToken } = require("../middlewares/verifyJwtToken");
 
 router.post('/register', registerUser);
 

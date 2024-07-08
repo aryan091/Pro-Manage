@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import collapse from '../../assets/collapse.png';
 import { HiOutlineUserAdd } from 'react-icons/hi';
 import { IoMdAdd } from "react-icons/io";
@@ -9,6 +9,7 @@ import CreateTaskModal from '../CreateTaskModal/CreateTaskModal';
 import AddPeopleModal from '../AddPeopleModal/AddPeopleModal';
 import axios from "axios";
 import { toast } from 'react-toastify';
+import { UserContext } from '../../context/UserContext';
 
 
 function Board() {
@@ -17,6 +18,9 @@ function Board() {
   const [users, setUsers] = useState([]); // Add this line
   const [filter, setFilter] = useState('This Week');
   const [loading, setLoading] = useState(true);
+
+  const {username} = useContext(UserContext)
+  console.log("Context in username : ",username)
 
   const [tasks, setTasks] = useState({
     backlog: [],
@@ -117,7 +121,7 @@ function Board() {
     <div className="w-[75%] h-full fixed ml-[25%] p-4">
       <header className="flex pb-4 border-b border-gray-200 justify-between">
         <div>
-          <h2 className="text-xl font-semibold">Welcome! Aryan Daftari</h2>
+          <h2 className="text-xl font-semibold">Welcome! {username}</h2>
         </div>
         <div className="text-gray-600">12th Jan, 2024</div>
       </header>
