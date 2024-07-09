@@ -25,7 +25,7 @@ function App() {
             <Route path="settings" element={<Settings />} />
           </Route>
 
-          <Route path="/public" element={<ViewTask />} />
+          <Route path="/public/:taskId" element={<ViewTask />} />
         </Routes>
 
         <ToastContainer

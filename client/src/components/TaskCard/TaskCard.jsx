@@ -6,6 +6,7 @@ import { Tooltip } from 'react-tooltip';
 import DeleteTaskModal from '../DeleteTaskModal/DeleteTaskModal';
 import './tooltip.css'; // Ensure this CSS file exists and contains necessary styles
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 
 function TaskCard({ priority, title, checklist, date, section, collapseChecklists, handleStatusChange, updateChecklist, assignedTo ,taskId,task , deleteTask}) {
@@ -140,6 +141,23 @@ const handleEdit = (task) => {
   navigate('/app/dashboard/create-task' , { state: { task: task, edit: true } })
 }
 
+const handleShareTask = (taskId) => {
+  const shareableLink = `http://localhost:5173/public/${taskId}`;
+  navigator.clipboard.writeText(shareableLink)
+    .then(() => {
+      toast.success('Link Copied to Clipboard..!')
+      setIsPopupVisible(false);
+
+    })
+    .catch(err => {
+      toast.error('Failed to copy to clipboard');
+      setIsPopupVisible(false);
+
+    });
+};
+
+
+
   return (
     <div className="task-card p-4 bg-white rounded-lg shadow-sm relative">
       <div className="task-card-box flex items-center justify-between mb-2">
@@ -163,8 +181,8 @@ const handleEdit = (task) => {
       {isPopupVisible && (
         <div ref={popupRef} className="popup-menu absolute top-6 right-0 bg-white shadow-md rounded-lg">
           <ul className="list-none m-0 p-2 w-44 h-28">
-            <li className="py-1 px-4 hover:bg-gray-100 cursor-pointer text-sm font-bold " onClick={()=> handleEdit(task)}>Edit</li>
-            <li className="py-1 px-4 hover:bg-gray-100 cursor-pointer text-sm font-bold">Share</li>
+            <li className="py-1 px-4 hover:bg-gray-100 cursor-pointer text-sm font-bold " onClick={()=> handleEdit(task)}>Edit</li> 
+            <li className="py-1 px-4 hover:bg-gray-100 cursor-pointer text-sm font-bold" onClick={() => handleShareTask(taskId)}>Share</li>
             <li className="py-1 px-4 hover:bg-gray-100 cursor-pointer text-red-500 text-sm font-bold" onClick={handleDeleteTask}>Delete</li>
           </ul>
         </div>

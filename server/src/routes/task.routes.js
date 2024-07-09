@@ -8,7 +8,8 @@ const {
     updateChecklist,
     getTaskAnalytics,
     deleteTask,
-    getTaskById
+    getTaskById,
+    viewTask
 } = require('../controllers/task.controller');
 const { verifyToken } = require("../middlewares/verifyJwtToken");
 
@@ -26,6 +27,10 @@ router.put('/updateChecklist/:id', verifyToken, updateChecklist);
 
 router.get('/analytics', verifyToken, getTaskAnalytics);
 
+router.get('/view-task/:id', viewTask )
+
 router.delete('/delete/:id', verifyToken, deleteTask);
+
+
 
 module.exports = router;
