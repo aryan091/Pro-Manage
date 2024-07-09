@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect ,useContext} from "react";
 import "./custom-scrollbar.css";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import { IoMdAdd } from "react-icons/io";
@@ -7,7 +7,9 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
 import { toast } from 'react-toastify';
-import { useLocation, useNavigate } from 'react-router-dom'; // Import the hooks
+import { useLocation, useNavigate } from 'react-router-dom'; 
+import { TaskContext } from '../../context/TaskContext';
+
 
 
 const CreateTaskModal = ({ closeModal, addTask, users, status,fetchTasks }) => {
@@ -23,6 +25,8 @@ const CreateTaskModal = ({ closeModal, addTask, users, status,fetchTasks }) => {
   const [taskStatus , setTaskStatus] = useState(status)
   const datePickerRef = useRef(null);
   const userDropdownRef = useRef(null);
+  const { tasks, refreshTasks } = useContext(TaskContext);
+
 
   const { state } = useLocation();
   const navigate = useNavigate();
@@ -61,7 +65,7 @@ const CreateTaskModal = ({ closeModal, addTask, users, status,fetchTasks }) => {
         console.log('Task Created:', response.data);
       }
       toast.success(state?.edit ? "Task updated successfully" : "Task created successfully");
-      fetchTasks()
+      refreshTasks()
     } catch (error) {
       console.error(error);
       toast.error(error.response?.data?.message || "Task operation failed");

@@ -168,54 +168,49 @@ const getUserProfile = asyncHandler( async (req, res) => {
     }
 })
 
-const updateDetails = asyncHandler( async (req, res) => {
+const updateDetails = asyncHandler(async (req, res) => {
     try {
-        const userId = decodeJwtToken(req.headers["authorization"]);
-        if (!userId) {
-            return res.status(401).json({ success: false, message: "User Not logged in" })
-        }   
-
-        const user = await User.findById(userId).select(
-            "-password "
-        );
-        if (!user) {
-            return res.status(401).json({ success: false, message: "User Not found " })
+      const userId = decodeJwtToken(req.headers["authorization"]);
+      if (!userId) {
+        return res.status(401).json({ success: false, message: "User Not logged in" });
+      }
+  
+      const user = await User.findById(userId).select("+password");
+      if (!user) {
+        return res.status(401).json({ success: false, message: "User Not found " });
+      }
+  
+      const { name, oldPassword, newPassword } = req.body;
+  
+      if (name) {
+        user.name = name;
+      }
+  
+      if (oldPassword && newPassword) {
+        const comparePassword = await bcrypt.compare(oldPassword, user.password);
+        if (!comparePassword) {
+          return res.status(401).json({ success: false, message: "Invalid Credentials" });
         }
-
-        const { name, oldPassword, newPassword } = req.body;
-
-        if(name)
-            {
-                user.name = name
-            }
-
-        if(oldPassword && newPassword)
-        {
-            const comparePassword = await bcrypt.compare(oldPassword, user.password);
-            if (!comparePassword)
-            return res.status(401).json({ success: false, message: "Invalid Credentials" })
-            const hashedPassword = await bcrypt.hash(newPassword, 10);
-            user.password = hashedPassword
-        }
-        await user.save();
-        return res
-        .status(200)
-        .json(
-            new ApiResponse
-            (
-                200, 
-                "User profile updated successfully",
-                user, 
-                true
-            )
-        )
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPassword;
+      }
+  
+      await user.save();
+      return res.status(200).json({
+        success: true,
+        message: "User profile updated successfully",
+        user: {
+          name: user.name,
+          email: user.email,
+          // Do not send the password back to the client
+        },
+      });
     } catch (error) {
-        console.log(error)
-        return res.status(401).json({ success: false, message: "Error while updating User profile " })  
-
+      console.log(error);
+      return res.status(500).json({ success: false, message: "Error while updating User profile " });
     }
-})
-
+  });
+  
 
 module.exports = {
     registerUser,

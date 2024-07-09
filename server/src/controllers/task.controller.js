@@ -177,55 +177,57 @@ const updateTask = asyncHandler(async (req, res) => {
 
 const getTask = asyncHandler(async (req, res) => {
     try {
-        const userId = req.userId;
-        const filter = req.query.filter || 'today'; // Default filter is 'week'
-
-        let dateRange;
-      
-        switch (filter) {
-          case 'today':
-            dateRange = {
-              start: moment().startOf('day'),
-              end: moment().endOf('day')
-            };
-            break;
-          case 'week':
-            dateRange = getWeekRange();
-            break;
-          case 'month':
-            dateRange = getMonthRange();
-            break;
-            default:
-                return res.status(400).json({ message: 'Invalid filter' });
-        }
-        try {
-            const tasks = await Task.find({
-              createdBy: userId,
-            //   dueDate: {
-            //     $gte: dateRange.start.toDate(),
-            //     $lte: dateRange.end.toDate()
-            //   }
-            });
-
-            return res.status(200).json(
-              new ApiResponse(
-                200,
-                tasks,
-                "Tasks fetched successfully",
-                true
-              )
-            );
-          } catch (error) {
-            console.log(error); 
-            return res.status(500).json({ message: 'Internal server error' });
-          }
-    } catch (error) {
-        console.log(error);
+      const userId = req.userId;
+      const filter = req.query.filter || 'week'; // Default filter is 'week'
+  
+      let dateRange;
+      switch (filter) {
+        case 'today':
+          dateRange = {
+            start: moment().startOf('day'),
+            end: moment().endOf('day'),
+          };
+          break;
+        case 'week':
+          dateRange = {
+            start: moment().startOf('week').startOf('day'),
+            end: moment().endOf('week').endOf('day'),
+          };
+          break;
+        case 'month':
+          dateRange = {
+            start: moment().startOf('month').startOf('day'),
+            end: moment().endOf('month').endOf('day'),
+          };
+          break;
+        default:
+          return res.status(400).json({ message: 'Invalid filter' });
+      }
+  
+      try {
+        const tasks = await Task.find({
+          createdBy: userId,
+          createdAt: {
+            $gte: dateRange.start.toDate(),
+            $lte: dateRange.end.toDate(),
+          },
+        });
+  
+        return res.status(200).json(
+          new ApiResponse(200, tasks, 'Tasks fetched successfully', true)
+        );
+      } catch (error) {
+        console.error(error);
         return res.status(500).json({ message: 'Internal server error' });
+      }
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Internal server error' });
     }
-});
-              
-const updateTaskStatus = asyncHandler(async (req, res) => {
+  });
+
+  
+    const updateTaskStatus = asyncHandler(async (req, res) => {
     try {
         const { status } = req.body;
         const taskId = req.params.id;

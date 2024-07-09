@@ -1,6 +1,7 @@
 // App.js
 import { UserContextProvider } from "./context/UserContext";
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { TaskProvider } from "./context/TaskContext";
 import Home from './components/Home/Home';
 import MainLayout from './components/MainLayout/MainLayout';
 import Dashboard from './components/Board/Board';
@@ -12,7 +13,8 @@ import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
-    <UserContextProvider> {/* Ensure UserContextProvider wraps the entire app */}
+    <UserContextProvider> 
+      <TaskProvider>
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -42,6 +44,7 @@ function App() {
           transition={Bounce}
         />
       </Router>
+      </TaskProvider>
     </UserContextProvider>
   );
 }

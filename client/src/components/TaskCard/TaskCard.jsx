@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef , useContext } from 'react';
 import { FaCircle } from "react-icons/fa";
 import arrow from '../../assets/arrow.png';
 import { STATUS_MAPPING } from '../../utils/StatusCardMapping';
@@ -7,12 +7,14 @@ import DeleteTaskModal from '../DeleteTaskModal/DeleteTaskModal';
 import './tooltip.css'; // Ensure this CSS file exists and contains necessary styles
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { TaskContext } from '../../context/TaskContext';
 
 
 function TaskCard({ priority, title, checklist, date, section, collapseChecklists, handleStatusChange, updateChecklist, assignedTo ,taskId,task , deleteTask}) {
   const [isChecklistVisible, setIsChecklistVisible] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const { tasks, refreshTasks } = useContext(TaskContext);
 
 
   const popupRef = useRef(null);
