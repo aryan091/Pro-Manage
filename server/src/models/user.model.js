@@ -9,10 +9,11 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
+    unique: true, // Ensure emails are unique
   },
   password: {
     type: String,
-    required: true  
+    required: true,
   },
   tasks: [
     {
@@ -22,8 +23,7 @@ const userSchema = new mongoose.Schema({
   ],
   board: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      type: String, // Store email as a string in board array
     },
   ],
 }, { timestamps: true });

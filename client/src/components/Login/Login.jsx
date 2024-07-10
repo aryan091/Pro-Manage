@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState , useContext } from 'react';
 import { MdOutlineEmail, MdOutlineLock, MdVisibility } from 'react-icons/md';
 import axios from "axios";
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { UserContext } from '../../context/UserContext';
 
 
 const Login = ({ clickLogin, clickSignUp }) => {
+
+  const {  setBoardUsers , setIsUserLoggedIn , setUsername , setId } = useContext(UserContext);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -29,10 +33,20 @@ const Login = ({ clickLogin, clickSignUp }) => {
       localStorage.setItem("token", response.data.data.token);
       setStatusMessage(response.data.data.message);
       toast.success(`${response.data.data.user.name} Logged In Successfully!`);
+      setIsUserLoggedIn(true);
+      setUsername(response.data.data.user.name);
+      setId(response.data.data.user._id);
+      setBoardUsers(response.data.data.user.board)
+
       navigate('/app/dashboard');
 
 
     } catch (error) {
+      setIsUserLoggedIn(false);
+      setUsername(null);
+      setId(null);
+      setBoardUsers([])
+
       console.error(error);
       setStatusMessage(
         error.response?.data?.message || "User Login failed"

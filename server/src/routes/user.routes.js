@@ -4,7 +4,8 @@ const {
     registerUser,
     loginUser,
     getUserProfile,
-    updateDetails
+    updateDetails,
+    addUser
 } = require('../controllers/user.controller');
 const { verifyToken , decodeJwtToken } = require("../middlewares/verifyJwtToken");
 
@@ -15,5 +16,7 @@ router.post('/login', loginUser);
 router.get('/profile', verifyToken, getUserProfile);
 
 router.put('/update', verifyToken, updateDetails);
+
+router.put('/add-user' , verifyToken , addUser)
 
 module.exports = router;

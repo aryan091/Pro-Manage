@@ -20,7 +20,8 @@ function Board() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const { username } = useContext(UserContext);
+  const { username  } = useContext(UserContext);
+  console.log("Username on board - ",username)
   const [collapseChecklists, setCollapseChecklists] = useState({
     backlog: false,
     todo: false,
@@ -32,8 +33,8 @@ function Board() {
   const location = useLocation(); 
 
   useEffect(() => {
-    refreshTasks(filter); // Pass the filter to refreshTasks
-  }, [filter]);
+    refreshTasks(); // Pass the filter to refreshTasks
+  }, []);
 
   const toggleCollapseChecklists = (column) => {
     setCollapseChecklists({
@@ -103,9 +104,6 @@ function Board() {
     }
   }
 
-  const addUser = (newUser) => {
-    setUsers(prevUsers => [...prevUsers, newUser]);
-  };
 
   const handleCreateTaskClick = () => {
     navigate('/app/dashboard/create-task');
@@ -218,7 +216,7 @@ function Board() {
       {location.pathname === '/app/dashboard/create-task' && (
         <CreateTaskModal closeModal={closeModal} users={users} status={'todo'} />
       )}
-      {isAddPeopleModalOpen && <AddPeopleModal closeModal={() => setIsAddPeopleModalOpen(false)} addUser={addUser} />}
+      {isAddPeopleModalOpen && <AddPeopleModal closeModal={() => setIsAddPeopleModalOpen(false)} />}
     </div>
   );
 }

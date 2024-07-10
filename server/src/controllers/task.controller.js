@@ -72,20 +72,33 @@ const createTask = asyncHandler(async (req, res) => {
             createdBy: userId
         })
     
-    
         const savedTask = await newTask.save();
 
+    
+
         if (assignedTo) {
-            const user = await User.findById(assignedTo);
+            const user = await User.findOne({ email: assignedTo });
             user.tasks.push(savedTask._id);
             await user.save();
           }
-    
+
+          user.tasks.push(savedTask._id);
+          await user.save();
+
+          const loggedInUserId = req.userId;// Assuming you have the user ID from authentication
+          let canEdit= true;
+  
+          if (loggedInUserId.toString() !== savedTask.createdBy.toString()) {
+              canEdit = false; 
+          }
+  
+  
+
     
         return res.status(201).json(
             new ApiResponse(
                 200,
-                savedTask,
+                {savedTask,canEdit},
                 "Task Created successfully",
                 true
             )
@@ -104,9 +117,9 @@ const updateTask = asyncHandler(async (req, res) => {
     try {
         const { title, priority, assignedTo, dueDate, checklist, status } = req.body;
         const taskId = req.params.id;
-        
+
         const task = await Task.findById(taskId);
-        
+
         if (!task) {
             return res.status(404).json({
                 success: false,
@@ -114,120 +127,137 @@ const updateTask = asyncHandler(async (req, res) => {
             });
         }
 
-        // Update title if provided
+        // Check if the logged-in user ID matches task.createdBy
+        const loggedInUserId = req.userId;; // Assuming you have the user ID from authentication
+        let canEdit= true;
+
+        if (loggedInUserId.toString() !== task.createdBy.toString()) {
+            canEdit = false; 
+        }
+
+        // Update task properties if provided in request body
         if (title) {
             task.title = title;
         }
 
-        // Update priority if provided
+        if(assignedTo)
+        {
+            task.assignedTo = assignedTo
+        }
+
         if (priority) {
             task.priority = priority;
         }
 
-        // Update checklist if provided
         if (checklist) {
             task.checklist = checklist;
         }
 
-        // Update status if provided
         if (status) {
             task.status = status;
         }
 
-        // Update dueDate if provided
         if (dueDate) {
             task.dueDate = dueDate;
         }
 
-        // Update assigned user if provided
-        if (assignedTo) {
-            // Remove task from current assigned user's tasks
+        if (assignedTo !== null) {
+            // Remove task from old user's tasks
             if (task.assignedTo) {
-                const oldUser = await User.findById(task.assignedTo);
-                oldUser.tasks = oldUser.tasks.filter(t => t.toString() !== taskId);
-                await oldUser.save();
+                const oldUser = await User.findOne({ email: task.assignedTo });
+                if (oldUser) {
+                    oldUser.tasks = oldUser.tasks.filter(t => t.toString() !== taskId);
+                    await oldUser.save();
+                }
             }
 
-            // Assign to new user and add task to their tasks
+            // Update task assignedTo and add task to new user's tasks
             task.assignedTo = assignedTo;
-            const newUser = await User.findById(assignedTo);
-            newUser.tasks.push(taskId);
-            await newUser.save();
+            const newUser = await User.findOne({ email: assignedTo });
+            if (newUser) {
+                newUser.tasks.push(taskId);
+                await newUser.save();
+            }
         }
 
         const updatedTask = await task.save();
 
         return res.status(200).json(
-            new ApiResponse(
-                200,
-                updatedTask,
-                "Task updated successfully",
-                true    
-            )
+            new ApiResponse(200, {updatedTask, canEdit}, 'Tasks fetched successfully', true)
         );
-        
+
+      
+
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             success: false,
             message: "Internal server error"
         });
-    } 
+    }
 });
 
 const getTask = asyncHandler(async (req, res) => {
     try {
-      const userId = req.userId;
-      const filter = req.query.filter || 'week'; // Default filter is 'week'
-  
-      let dateRange;
-      switch (filter) {
-        case 'today':
-          dateRange = {
-            start: moment().startOf('day'),
-            end: moment().endOf('day'),
-          };
-          break;
-        case 'week':
-          dateRange = {
-            start: moment().startOf('week').startOf('day'),
-            end: moment().endOf('week').endOf('day'),
-          };
-          break;
-        case 'month':
-          dateRange = {
-            start: moment().startOf('month').startOf('day'),
-            end: moment().endOf('month').endOf('day'),
-          };
-          break;
-        default:
-          return res.status(400).json({ message: 'Invalid filter' });
-      }
-  
-      try {
-        const tasks = await Task.find({
-          createdBy: userId,
-          createdAt: {
-            $gte: dateRange.start.toDate(),
-            $lte: dateRange.end.toDate(),
-          },
-        });
-  
-        return res.status(200).json(
-          new ApiResponse(200, tasks, 'Tasks fetched successfully', true)
-        );
-      } catch (error) {
+        const userId = req.userId;
+        const filter = req.query.filter || 'week'; // Default filter is 'week'
+
+        let dateRange;
+        switch (filter) {
+            case 'today':
+                dateRange = {
+                    start: moment().startOf('day'),
+                    end: moment().endOf('day'),
+                };
+                break;
+            case 'week':
+                dateRange = {
+                    start: moment().startOf('week').startOf('day'),
+                    end: moment().endOf('week').endOf('day'),
+                };
+                break;
+            case 'month':
+                dateRange = {
+                    start: moment().startOf('month').startOf('day'),
+                    end: moment().endOf('month').endOf('day'),
+                };
+                break;
+            default:
+                return res.status(400).json({ message: 'Invalid filter' });
+        }
+
+        try {
+            // Fetch user to get their tasks array
+            const user = await User.findById(userId);
+
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            // Fetch tasks where the user's _id exists in the tasks array
+            const tasks = await Task.find({
+                _id: { $in: user.tasks }, // Assuming user.tasks contains ObjectIDs of tasks
+                createdAt: {
+                    $gte: dateRange.start.toDate(),
+                    $lte: dateRange.end.toDate(),
+                },
+            });
+
+            return res.status(200).json(
+                new ApiResponse(200, tasks, 'Tasks fetched successfully', true)
+            );
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: 'Internal server error' });
+        }
+    } catch (error) {
         console.error(error);
         return res.status(500).json({ message: 'Internal server error' });
-      }
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: 'Internal server error' });
     }
-  });
+});
 
-  
-    const updateTaskStatus = asyncHandler(async (req, res) => {
+
+  const updateTaskStatus = asyncHandler(async (req, res) => {
     try {
         const { status } = req.body;
         const taskId = req.params.id;
@@ -248,26 +278,22 @@ const getTask = asyncHandler(async (req, res) => {
             });
         }
 
+        // Update the task status
         task.status = status;
-
-        // if (task.assignedTo && !mongoose.Types.ObjectId.isValid(task.assignedTo)) {
-        //     return res.status(400).json({
-        //         success: false,
-        //         message: "Invalid assignedTo ID",
-        //     });
-        // }
-
-        // const assignedUser = await User.findById(task.assignedTo);
-        // if (assignedUser) {
-        //     const taskIndex = assignedUser.tasks.findIndex(task => task.toString() === taskId);
-        //     if (taskIndex !== -1) {
-        //         // Assuming tasks is an array of task IDs, not objects with status property
-        //         assignedUser.tasks[taskIndex] = taskId;
-        //         await assignedUser.save();
-        //     }
-        // }
-
         const updatedTask = await task.save();
+
+        // Check if the task is assigned to a user and update their tasks if necessary
+        if (task.assignedTo) {
+            const assignedUser = await User.findOne({ email: task.assignedTo });
+            if (assignedUser) {
+                assignedUser.tasks.forEach(userTask => {
+                    if (userTask._id.toString() === task._id.toString()) {
+                        userTask.status = status;
+                    }
+                });
+                await assignedUser.save();
+            }
+        }
 
         return res.status(200).json(
             new ApiResponse(
@@ -307,9 +333,39 @@ const updateChecklist = asyncHandler(async (req, res) => {
             });
         }
 
+        console.log('Before update:');
+        console.log('Task:', task);
+        console.log('Checklist:', task.checklist);
+
         // Update the specific checklist item's checked status
-        task.checklist[checklistIndex].checked = checked;
+        if (task.checklist && task.checklist.length > checklistIndex) {
+            task.checklist[checklistIndex].checked = checked;
+        } else {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid checklist index or checklist not found"
+            });
+        }
+
         const updatedTask = await task.save();
+
+        // Check if the task is assigned to a user and update their checklist if necessary
+        if (task.assignedTo) {
+            const assignedUser = await User.findOne({ email: task.assignedTo });
+            if (assignedUser) {
+                assignedUser.tasks.forEach(userTask => {
+                    if (userTask._id.toString() === task._id.toString()) {
+                        if (userTask.checklist && userTask.checklist.length > checklistIndex) {
+                            userTask.checklist[checklistIndex].checked = checked;
+                        }
+                    }
+                });
+                await assignedUser.save();
+            }
+        }
+
+        console.log('After update:');
+        console.log('Updated Task:', updatedTask);
 
         return res.status(200).json(
             new ApiResponse(
@@ -326,6 +382,7 @@ const updateChecklist = asyncHandler(async (req, res) => {
             message: "Internal server error"        
         });
     } 
+
 });
 
 
@@ -391,10 +448,33 @@ const getTaskAnalytics = asyncHandler(async (req, res) => {
 const deleteTask = asyncHandler(async (req, res) => {
     try {
         const taskId = req.params.id;
-        const task = await Task.findByIdAndDelete(taskId);
+        const userId = req.userId; // Assuming userId is available in the request
+
+        // Find the task to be deleted
+        const task = await Task.findById(taskId);
         if (!task) {
             return res.status(404).json({ success: false, message: "Task not found" });
         }
+
+        // Check if the task is assigned to a user and remove it from their tasks array
+        if (task.assignedTo) {
+            const assignedUser = await User.findOne({ email: task.assignedTo });
+            if (assignedUser) {
+                assignedUser.tasks = assignedUser.tasks.filter(taskId => taskId.toString() !== task._id.toString());
+                await assignedUser.save();
+            }
+        }
+
+        // Remove the task from the current user's tasks array
+        const currentUser = await User.findById(userId);
+        if (currentUser) {
+            currentUser.tasks = currentUser.tasks.filter(taskId => taskId.toString() !== task._id.toString());
+            await currentUser.save();
+        }
+
+        // Delete the task from the Task collection
+        await Task.findByIdAndDelete(taskId);
+
         return res.status(200).json(
             new ApiResponse(
                 200,
@@ -402,7 +482,7 @@ const deleteTask = asyncHandler(async (req, res) => {
                 "Task deleted successfully",
                 true
             )
-        ) 
+        );
     } catch (error) {
         console.log(error);
         return res.status(500).json({ success: false, message: "Internal server error" });

@@ -1,6 +1,7 @@
 import React from "react";
 
-const DeleteTaskModal = ({ closeModal, deleteTask, taskId }) => {
+const DeleteTaskModal = ({ closeModal, deleteTask, taskId ,task}) => {
+  console.log("Task to be deleted",task)
   const handleDelete = () => {
     deleteTask(taskId);
     closeModal();

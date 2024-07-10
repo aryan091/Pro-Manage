@@ -9,10 +9,14 @@ import axios from "axios";
 import { toast } from 'react-toastify';
 import { useLocation, useNavigate } from 'react-router-dom'; 
 import { TaskContext } from '../../context/TaskContext';
+import { UserContext } from '../../context/UserContext';
 
 
 
 const CreateTaskModal = ({ closeModal, addTask, users, status,fetchTasks }) => {
+
+  const { username , boardUsers , setBoardUsers , addUser , id } = useContext(UserContext);
+
   const [title, setTitle] = useState("");
   const [selectedPriority, setSelectedPriority] = useState("");
   const [checklist, setChecklist] = useState([{ item: "", checked: false }]);
@@ -46,6 +50,7 @@ const CreateTaskModal = ({ closeModal, addTask, users, status,fetchTasks }) => {
   }, [state]);
 
 
+
   const createTask = async (newTask) => {
     console.log("New Task:", newTask);
     setLoading(true);
@@ -58,6 +63,7 @@ const CreateTaskModal = ({ closeModal, addTask, users, status,fetchTasks }) => {
         const url = `${import.meta.env.VITE_BACKEND_URL}/task/update/${state.task._id}`;
         const response = await axios.put(url, newTask);
         console.log('Task Updated:', response.data);
+        console.log('Task Updated:', response.data.data.canEdit);
       } else {
         // Create new task
         const url = `${import.meta.env.VITE_BACKEND_URL}/task/create`;
@@ -68,7 +74,6 @@ const CreateTaskModal = ({ closeModal, addTask, users, status,fetchTasks }) => {
       refreshTasks()
     } catch (error) {
       console.error(error);
-      toast.error(error.response?.data?.message || "Task operation failed");
     } finally {
       setLoading(false);
     }
@@ -183,6 +188,10 @@ const CreateTaskModal = ({ closeModal, addTask, users, status,fetchTasks }) => {
     setIsUserDropdownOpen((prevState) => !prevState);
   };
 
+  const canEdit = state?.task && id && state.task.createdBy === id.toString();
+
+
+
   return (
     <div className="task-modal fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-10">
       <div className="task-modal-content bg-white rounded-lg shadow-lg w-[644px] h-[596px] p-6 flex flex-col justify-between relative">
@@ -283,7 +292,7 @@ const CreateTaskModal = ({ closeModal, addTask, users, status,fetchTasks }) => {
               <div className="relative inline-block w-[88%]">
                 <div
                   id="assignee"
-                  className="task-assignee-input shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline cursor-pointer"
+                  className={`task-assignee-input shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline cursor-pointer `}
                   onClick={toggleUserDropdown}
                 >
                   {selectedUser ? (
@@ -298,6 +307,7 @@ const CreateTaskModal = ({ closeModal, addTask, users, status,fetchTasks }) => {
                 </div>
                 <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
                   <RiArrowDropDownLine
+                  
                     size={20}
                     className={
                       users.length === 0
@@ -307,16 +317,15 @@ const CreateTaskModal = ({ closeModal, addTask, users, status,fetchTasks }) => {
                     onClick={handleDropdownIconClick}
                   />
                 </div>
-                {isUserDropdownOpen && (
+                {isUserDropdownOpen && canEdit && (
                   <div
                     ref={userDropdownRef}
                     className="absolute mt-2 bg-[#FFFFFF] border border-gray-300 rounded-lg shadow-lg z-10 w-full max-h-48 overflow-y-auto custom-scrollbar"
                   >
-                    {users.map((user) => (
+                    {boardUsers.map((user) => (
                       <div
                         key={user}
                         className="flex items-center cursor-pointer px-4 py-2"
-                        onClick={() => handleUserSelection(user)}
                       >
                         <div className="initials flex items-center justify-center w-12 h-12 rounded-full bg-[#FFEBEB] text-xl text-black font-semibold mr-2">
                           {getInitials(user)}
@@ -326,6 +335,10 @@ const CreateTaskModal = ({ closeModal, addTask, users, status,fetchTasks }) => {
                         </span>
                         <button
                           className="assign-button ml-auto px-3 py-1 w-40 h-8 bg-[#FFFFFF] text-[#767575] rounded-lg border-[2px]"
+                          onClick={() => {
+                            setSelectedUser(user);
+                            handleDropdownIconClick();
+                          }}
                         >
                           Assign
                         </button>

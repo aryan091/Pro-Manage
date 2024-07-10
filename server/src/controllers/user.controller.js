@@ -210,11 +210,47 @@ const updateDetails = asyncHandler(async (req, res) => {
       return res.status(500).json({ success: false, message: "Error while updating User profile " });
     }
   });
+
+  const addUser = asyncHandler(async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        // Check if the user is registered
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(500).json({ success: false, message: "User Not Registered " });
+        }
+
+        const userId = req.userId; 
+
+        const currentUser = await User.findById(userId);
+        if (!currentUser) {
+            return res.status(500).json({ success: false, message: "Current User Not Found " });
+        }
+
+        const isUserInBoard = currentUser.board.some(boardUserEmail => boardUserEmail === user.email);
+        if (isUserInBoard) {
+            return res.status(500).json({ success: false, message: "User Already added in Board" });
+        }
+
+        currentUser.board.push(user.email); // Add email instead of ID
+        await currentUser.save();
+
+        return res
+            .status(200)
+            .json(new ApiResponse(200, user.email, "User Added successfully", true));
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ success: false, message: "Error while adding User to Board " });
+    }
+});
   
 
 module.exports = {
     registerUser,
     loginUser,
     getUserProfile,
-    updateDetails
+    updateDetails,
+    addUser
 }

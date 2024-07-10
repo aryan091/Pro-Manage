@@ -1,7 +1,6 @@
 import React from 'react';
 
 const EmailAddedModal = ({ closeModalEmail, addEmail }) => {
-  console.log('In emailModal addEmail', addEmail);
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-[665px] h-[224px]">

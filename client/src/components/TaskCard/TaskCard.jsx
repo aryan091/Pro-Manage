@@ -8,6 +8,7 @@ import './tooltip.css'; // Ensure this CSS file exists and contains necessary st
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { TaskContext } from '../../context/TaskContext';
+import { UserContext } from '../../context/UserContext';
 
 
 function TaskCard({ priority, title, checklist, date, section, collapseChecklists, handleStatusChange, updateChecklist, assignedTo ,taskId,task , deleteTask}) {
@@ -15,6 +16,8 @@ function TaskCard({ priority, title, checklist, date, section, collapseChecklist
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const { tasks, refreshTasks } = useContext(TaskContext);
+  const { id } = useContext(UserContext);
+
 
 
   const popupRef = useRef(null);
@@ -158,6 +161,7 @@ const handleShareTask = (taskId) => {
     });
 };
 
+const canEdit = task && id && task.createdBy === id.toString();
 
 
   return (
@@ -185,7 +189,10 @@ const handleShareTask = (taskId) => {
           <ul className="list-none m-0 p-2 w-44 h-28">
             <li className="py-1 px-4 hover:bg-gray-100 cursor-pointer text-sm font-bold " onClick={()=> handleEdit(task)}>Edit</li> 
             <li className="py-1 px-4 hover:bg-gray-100 cursor-pointer text-sm font-bold" onClick={() => handleShareTask(taskId)}>Share</li>
+            {canEdit && (
             <li className="py-1 px-4 hover:bg-gray-100 cursor-pointer text-red-500 text-sm font-bold" onClick={handleDeleteTask}>Delete</li>
+
+            )}
           </ul>
         </div>
       )}
@@ -251,7 +258,7 @@ const handleShareTask = (taskId) => {
           </div>
         </div>
       )}
-      {isDeleteModalOpen && <DeleteTaskModal closeModal={() => setIsDeleteModalOpen(false)}  deleteTask={deleteTask} taskId={taskId}/>}
+      {isDeleteModalOpen && <DeleteTaskModal closeModal={() => setIsDeleteModalOpen(false)} task={task} deleteTask={deleteTask} taskId={taskId}/>}
     </div>
   );
 }
