@@ -13,6 +13,7 @@ import { toast } from 'react-toastify';
 import { UserContext } from '../../context/UserContext';
 import { TaskContext } from '../../context/TaskContext';
 import { FILTER_MAPPING } from '../../utils/FilterMapping';
+import Shimmer from '../Shimmer/Shimmer';
 
 function Board() {
   const { tasks, refreshTasks,setFilter,filter } = useContext(TaskContext);
@@ -104,6 +105,7 @@ function Board() {
     }
   }
 
+  
 
   const handleCreateTaskClick = () => {
     navigate('/app/dashboard/create-task');
@@ -146,6 +148,8 @@ function Board() {
   };
   
   const currentDate = formatDateString(new Date().toISOString());
+
+  
 
   return (
     <div className="w-[75%] h-full fixed ml-[25%] p-4">

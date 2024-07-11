@@ -9,13 +9,14 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { TaskContext } from '../../context/TaskContext';
 import { UserContext } from '../../context/UserContext';
+import Shimmer from '../Shimmer/Shimmer';
 
 
 function TaskCard({ priority, title, checklist, date, section, collapseChecklists, handleStatusChange, updateChecklist, assignedTo ,taskId,task , deleteTask}) {
   const [isChecklistVisible, setIsChecklistVisible] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const { tasks, refreshTasks } = useContext(TaskContext);
+  const { tasks, refreshTasks , loadingTask} = useContext(TaskContext);
   const { id } = useContext(UserContext);
 
 
@@ -162,6 +163,11 @@ const handleShareTask = (taskId) => {
 };
 
 const canEdit = task && id && task.createdBy === id.toString();
+
+if(loadingTask)
+{
+  return <Shimmer/>
+}
 
 
   return (

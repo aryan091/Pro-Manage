@@ -1,0 +1,37 @@
+/* shimmer.css */
+
+/* Define styles for the shimmer effect */
+.shimmer-task-card {
+    position: relative;
+    overflow: hidden;
+    background: #f3f3f3; /* Fallback for older browsers */
+    background: linear-gradient(to right, #ececec 8%, #f0f0f0 18%, #ececec 33%);
+    animation: shimmer 1.5s infinite linear;
+  }
+  
+  @keyframes shimmer {
+    0% {
+      background-position: -600px 0;
+    }
+    100% {
+      background-position: 600px 0;
+    }
+  }
+  
+  /* Styles for individual shimmer elements */
+  .shimmer-priority {
+    width: 6rem; /* Adjust width as needed */
+    height: 1rem; /* Adjust height as needed */
+    margin-bottom: 0.5rem; /* Adjust margin as needed */
+    border-radius: 0.25rem; /* Adjust border radius as needed */
+  }
+  
+  .shimmer-assigned-to {
+    width: 3rem; /* Adjust width as needed */
+    height: 3rem; /* Adjust height as needed */
+    border-radius: 50%; /* Make it circular */
+    margin-left: 0.5rem; /* Adjust margin as needed */
+  }
+  
+  /* Add more styles for other parts of the shimmer effect */
+  

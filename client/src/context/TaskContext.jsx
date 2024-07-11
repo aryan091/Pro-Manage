@@ -68,7 +68,7 @@ const TaskProvider = ({ children }) => {
   }, []);
 
   return (
-    <TaskContext.Provider value={{ tasks, refreshTasks, analytics , setFilter  , filter}}>
+    <TaskContext.Provider value={{ tasks, refreshTasks, analytics , setFilter  , filter , loading}}>
       {children}
     </TaskContext.Provider>
   );
