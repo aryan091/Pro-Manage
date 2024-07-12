@@ -390,7 +390,12 @@ const getTaskAnalytics = asyncHandler(async (req, res) => {
     try {
         const userId = req.userId;
 
-        const tasks = await Task.find({ createdBy: userId });
+        const user = await User.findById(userId);
+
+        const tasks = await Task.find({ 
+            _id: { $in: user.tasks }, 
+
+         });
 
         const analytics = {
             backlogTasks: 0,
@@ -425,10 +430,12 @@ const getTaskAnalytics = asyncHandler(async (req, res) => {
               analytics.highPriorityTasks++;
             }
       
-            // Count tasks with a due date
-            if (task.dueDate) {
+            const today = new Date();
+            const dueDate = new Date(task.dueDate);
+            if (dueDate > today) {
               analytics.dueDateTasks++;
             }
+            
           });
 
           return res.status(200).json(

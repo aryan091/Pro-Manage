@@ -38,9 +38,9 @@ app.get('/api/health', (req, res) => {
 })
 
 app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'path/to/index.html'));
-  });
-  
+  res.sendFile(path.resolve(__dirname, 'path/to/index.html'));
+});
+
 
 
 app.listen(port, () => {

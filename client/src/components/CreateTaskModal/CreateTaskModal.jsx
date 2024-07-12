@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect ,useContext} from "react";
+import  { useState, useRef, useEffect ,useContext} from "react";
 import "./custom-scrollbar.css";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import { IoMdAdd } from "react-icons/io";
@@ -7,15 +7,15 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
 import { toast } from 'react-toastify';
-import { useLocation, useNavigate } from 'react-router-dom'; 
+import { useLocation } from 'react-router-dom'; 
 import { TaskContext } from '../../context/TaskContext';
 import { UserContext } from '../../context/UserContext';
 
 
 
-const CreateTaskModal = ({ closeModal, addTask, users, status,fetchTasks }) => {
+const CreateTaskModal = ({ closeModal, status }) => {
 
-  const { username , boardUsers , setBoardUsers , addUser , id } = useContext(UserContext);
+  const {  boardUsers  , id } = useContext(UserContext);
 
   const [title, setTitle] = useState("");
   const [selectedPriority, setSelectedPriority] = useState("");
@@ -29,11 +29,10 @@ const CreateTaskModal = ({ closeModal, addTask, users, status,fetchTasks }) => {
   const [taskStatus , setTaskStatus] = useState(status)
   const datePickerRef = useRef(null);
   const userDropdownRef = useRef(null);
-  const { tasks, refreshTasks } = useContext(TaskContext);
+  const {  refreshTasks } = useContext(TaskContext);
 
 
   const { state } = useLocation();
-  const navigate = useNavigate();
 
 
   useEffect(() => {
@@ -310,7 +309,7 @@ const CreateTaskModal = ({ closeModal, addTask, users, status,fetchTasks }) => {
                   
                     size={20}
                     className={
-                      users.length === 0
+                      boardUsers.length === 0
                         ? "text-gray-400 cursor-not-allowed"
                         : "text-gray-500 cursor-pointer"
                     }
@@ -349,12 +348,12 @@ const CreateTaskModal = ({ closeModal, addTask, users, status,fetchTasks }) => {
               </div>
             </div>
 
-            <div className="task-checklist flex flex-col h-[17rem] mb-4 flex-grow overflow-y-auto custom-scrollbar">
+            <div className="task-checklist flex flex-col h-[14rem] mb-4 flex-grow  ">
               <span className="block text-gray-700 text-sm font-bold mb-2">
                 Checklist ({checkedCount}/{checklist.length}){" "}
                 <span className="text-red-500">*</span>
               </span>
-              <div className="task-checklist-items flex flex-col space-y-2">
+              <div className="task-checklist-items flex flex-col space-y-2 overflow-y-auto custom-scrollbar">
                 {checklist.map((item, index) => (
                   <div
                     key={index}
@@ -388,7 +387,9 @@ const CreateTaskModal = ({ closeModal, addTask, users, status,fetchTasks }) => {
                   </div>
                 ))}
               </div>
-              <div className="task-checklist-add mt-2 flex gap-1">
+
+            </div>
+            <div className="task-checklist-add mt-2 flex gap-1">
                 <div>
                   <IoMdAdd
                     size={16}
@@ -405,7 +406,8 @@ const CreateTaskModal = ({ closeModal, addTask, users, status,fetchTasks }) => {
                   Add New
                 </button>
               </div>
-            </div>
+              
+
           </div>
 
           {Object.keys(errors).length > 0 && (

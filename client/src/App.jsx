@@ -10,6 +10,7 @@ import Settings from './components/Settings/Settings';
 import ViewTask from './components/ViewTask/ViewTask';
 import { ToastContainer, Bounce } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import NotFound from "./components/NotFound/NotFound";
 
 function App() {
   return (
@@ -25,7 +26,9 @@ function App() {
 
             <Route path="analytics" element={<Analytics />} />
             <Route path="settings" element={<Settings />} />
+
           </Route>
+          <Route path="*" element={<NotFound />} />
 
           <Route path="/public/:taskId" element={<ViewTask />} />
         </Routes>

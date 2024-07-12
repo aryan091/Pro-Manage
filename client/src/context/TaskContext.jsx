@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from 'react';
+import { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
 const TaskContext = createContext();
@@ -11,7 +11,7 @@ const TaskProvider = ({ children }) => {
     done: [],
   });
   const [loading, setLoading] = useState(true);
-  const [analytics, setAnalytics] = useState(null);
+  const [analytic, setAnalytic] = useState(null);
   const [filter, setFilter] = useState('');
 
 
@@ -24,7 +24,7 @@ const TaskProvider = ({ children }) => {
 
       const response = await axios.get(reqUrl);
       console.log(response.data);
-      setAnalytics(response.data.data);
+      setAnalytic(response.data.data);
     } catch (error) {
       console.error('Error while fetching analytics:', error);
     } finally {
@@ -65,10 +65,10 @@ const TaskProvider = ({ children }) => {
 
   useEffect(() => {
     refreshTasks();
-  }, []);
+  },[]);
 
   return (
-    <TaskContext.Provider value={{ tasks, refreshTasks, analytics , setFilter  , filter , loading}}>
+    <TaskContext.Provider value={{ tasks, refreshTasks, analytic , setFilter  , filter , loading , taskAnalytics}}>
       {children}
     </TaskContext.Provider>
   );

@@ -1,0 +1,16 @@
+.view-task-content{
+    width: 576px;
+}
+
+
+@media screen and (max-width: 585px) {
+
+    .header-container{
+        margin-left: 2rem;
+    }
+
+.view-task-content{
+    width: 326px;
+    height: 720px;
+}
+  }

@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FaCircle } from "react-icons/fa";
 import './custom-scrollbar.css';
 import logo from '../../assets/icon.png';
 import { useParams } from "react-router-dom";
 import axios from 'axios';
+import ViewTaskShimmer from "../Shimmer/ViewTaskShimmer";
+import './ViewTask.css'
 
 const ViewTask = () => {
   const { taskId } = useParams();
@@ -61,7 +63,7 @@ const ViewTask = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <ViewTaskShimmer />
   }
 
   if (!task) {
@@ -77,7 +79,7 @@ const ViewTask = () => {
         <h1 className="inline-block text-lg font-semibold">Pro Manage</h1>
       </div>
 
-      <div className="view-task-content w-[576px] max-h-[500px] bg-white shadow-lg p-6 rounded-lg mt-4">
+      <div className="view-task-content  max-h-[500px]  bg-white shadow-lg p-6 rounded-lg mt-4">
         <div className="view-task-card mb-4">
           <div className="view-task-header flex items-center justify-between mb-4">
             <span
