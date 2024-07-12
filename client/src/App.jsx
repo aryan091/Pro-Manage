@@ -11,6 +11,7 @@ import ViewTask from './components/ViewTask/ViewTask';
 import { ToastContainer, Bounce } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import NotFound from "./components/NotFound/NotFound";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 
 function App() {
   return (
@@ -21,13 +22,20 @@ function App() {
           <Route path="/" element={<Home />} />
 
           <Route path="/app/*" element={<MainLayout />}>
-            <Route path="dashboard" element={<Board />} />
-            <Route path="dashboard/create-task" element={<Board />} />
+            <Route path="dashboard" element={<ProtectedRoute Component={Board} />} />
+            <Route path="dashboard/create-task" element={<ProtectedRoute Component={Board} />} />
 
-            <Route path="analytics" element={<Analytics />} />
-            <Route path="settings" element={<Settings />} />
+            <Route path="analytics" element={<ProtectedRoute Component={Analytics} />} />
+            <Route path="settings" element={<ProtectedRoute Component={Settings} />} />
+            
 
           </Route>
+          <Route path="/app/dashboard/*" element={<NotFound />} />
+          <Route path="/app/analytics/*" element={<NotFound />} />
+          <Route path="/app/settings/*" element={<NotFound />} />
+
+
+
           <Route path="*" element={<NotFound />} />
 
           <Route path="/public/:taskId" element={<ViewTask />} />
