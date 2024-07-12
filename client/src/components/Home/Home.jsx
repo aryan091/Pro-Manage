@@ -1,14 +1,15 @@
-import React, { useState } from 'react'
+import  { useState , useContext, useEffect } from 'react'
 import SidePage from '../SidePage/SidePage'
 import Login from '../Login/Login'
 import Register from '../Register/Register'
-import SideBar from '../SideBar/SideBar'
-import MainLayout from '../MainLayout/MainLayout'
 import { useNavigate } from 'react-router-dom';
+import { UserContext } from '../../context/UserContext';
 const Home = () => {
 
   const [isSignUp, setIsSignUp] = useState(true);
   const [isLogin, setIsLogin] = useState(false);
+  const { isUserLoggedIn  } = useContext(UserContext);
+
   const navigate = useNavigate();
 
 
@@ -21,6 +22,14 @@ const Home = () => {
     setIsSignUp(true);
     setIsLogin(false);
   };
+
+  useEffect(() => {
+    if (isUserLoggedIn) {
+      navigate('/app/dashboard');
+    }
+  }, [isUserLoggedIn]);
+
+
 
 
   return (
