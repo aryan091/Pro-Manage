@@ -7,7 +7,7 @@ import { HiOutlineLogout } from "react-icons/hi";
 import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/UserContext';
-
+import SideBarShimmer from '../Shimmer/SideBarShimmer'
 
 
 const SideBar = () => {
@@ -16,6 +16,12 @@ const SideBar = () => {
 
   const navigate = useNavigate()
 
+
+  if (loading) {
+    return <SideBarShimmer />
+  }
+
+
     return (
       <div className="w-[25%] h-full bg-white border-r border-gray-200 fixed flex flex-col">
         <div className="p-4 border-b border-gray-200">
@@ -23,7 +29,7 @@ const SideBar = () => {
           <Link to='/app/dashboard'><h1 className="inline-block text-lg font-semibold">Pro Manage</h1></Link>
         </div>
         <nav className="flex flex-col p-4 space-y-4">
-          <Link to="/app/dashboard" className="flex items-center text-teal-600 bg-gray-100 p-2 rounded">
+          <Link to="/app/dashboard" className="flex items-center text-gray-700 hover:bg-gray-100 p-2 rounded">
             <img src={boardIcon} alt="Board" className="w-6 h-6 mr-2"/> 
             <Link to='/app/dashboard'><span className="font-bold">Board</span></Link>
           </Link>
