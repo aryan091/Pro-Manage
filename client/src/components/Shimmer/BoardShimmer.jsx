@@ -6,7 +6,7 @@ const BoardShimmer = () => {
     <div className="w-[75%] h-full fixed ml-[25%] p-4">
       <header className="flex pb-4 border-b border-gray-200 justify-between">
         <div>
-          <h2 className="text-xl font-semibold">Welcome! <span className="shimmer-line h-6 w-20"></span></h2>
+          <h2 className="text-xl font-semibold"> <span className="shimmer-line h-6 w-20"></span></h2>
         </div>
         <div className="text-gray-600"><span className="shimmer-line h-4 w-16"></span></div>
       </header>
