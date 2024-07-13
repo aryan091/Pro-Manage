@@ -8,10 +8,12 @@ import axios from 'axios';
   const [id, setId] = useState(null);
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const [boardUsers , setBoardUsers] = useState([])
+  const [loading, setLoading] = useState(true);
   
 
   useEffect(() => {
     const getUser = async () => {
+      setLoading(true);
       try {
         const token = localStorage.getItem("token");
         if (token) {
@@ -30,13 +32,16 @@ import axios from 'axios';
       } catch (error) {
         console.log('Error fetching user profile:', error.response ? error.response.data.message : error.message);
       }
+      finally {
+        setLoading(false);
+      }
     };
 
     getUser();
   }, []); // Ensure this dependency array is empty
 
   return (
-    <UserContext.Provider value={{ username, setUsername, id, setId, isUserLoggedIn, setIsUserLoggedIn , boardUsers , setBoardUsers  }}>
+    <UserContext.Provider value={{ username, setUsername, id, setId, isUserLoggedIn, setIsUserLoggedIn , boardUsers , setBoardUsers , loading  }}>
       {children}
     </UserContext.Provider>
   );
