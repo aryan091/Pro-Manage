@@ -5,6 +5,7 @@ import Register from '../Register/Register'
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/UserContext';
 import BoardShimmer from '../Shimmer/BoardShimmer';
+import SideBarShimmer from '../Shimmer/SideBarShimmer';
 const Home = () => {
 
   const [isSignUp, setIsSignUp] = useState(true);
@@ -31,7 +32,12 @@ const Home = () => {
   }, []);
 
   if (loading) {
-    return <BoardShimmer />
+    return(
+      <>
+        <SideBarShimmer />
+        <BoardShimmer />
+      </>
+    ) 
   }
 
 
