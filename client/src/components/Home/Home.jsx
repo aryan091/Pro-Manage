@@ -4,11 +4,12 @@ import Login from '../Login/Login'
 import Register from '../Register/Register'
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/UserContext';
+import BoardShimmer from '../Shimmer/BoardShimmer';
 const Home = () => {
 
   const [isSignUp, setIsSignUp] = useState(true);
   const [isLogin, setIsLogin] = useState(false);
-  const { isUserLoggedIn  } = useContext(UserContext);
+  const { isUserLoggedIn  , loading} = useContext(UserContext);
 
   const navigate = useNavigate();
 
@@ -27,8 +28,11 @@ const Home = () => {
     if (isUserLoggedIn) {
       navigate('/app/dashboard');
     }
-  }, [isUserLoggedIn]);
+  }, []);
 
+  if (loading) {
+    return <BoardShimmer />
+  }
 
 
 
