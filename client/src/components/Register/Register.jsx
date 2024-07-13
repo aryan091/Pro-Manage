@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { FaRegUser } from "react-icons/fa6";
 import { MdOutlineEmail, MdOutlineLock, MdVisibility } from 'react-icons/md';
 import axios from "axios";
+import { PropagateLoader } from 'react-spinners';
 import { toast } from 'react-toastify';
 
 function Register({ clickLogin, clickSignUp }) {
@@ -22,6 +23,20 @@ function Register({ clickLogin, clickSignUp }) {
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
+
+  const loadingSpinnerStyles = {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100vw",
+    height: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 9999,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  };
+
 
   const register = async ({ name, email, password, confirmPassword }) => {
     setLoading(true);
@@ -173,7 +188,14 @@ function Register({ clickLogin, clickSignUp }) {
         {statusMessage && (
           <p className="text-center mt-4 text-[#828282]">{statusMessage}</p>
         )}
+        {loading && (
+        <div style={loadingSpinnerStyles}>
+        <PropagateLoader color="#ffffff" />
+        </div>
+      )}
+
       </form>
+      
     </div>
   );
 }

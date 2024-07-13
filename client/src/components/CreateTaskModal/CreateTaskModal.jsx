@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 import { useLocation } from 'react-router-dom'; 
 import { TaskContext } from '../../context/TaskContext';
 import { UserContext } from '../../context/UserContext';
-
+import { PropagateLoader } from 'react-spinners';
 
 
 const CreateTaskModal = ({ closeModal, status }) => {
@@ -47,6 +47,19 @@ const CreateTaskModal = ({ closeModal, status }) => {
       setTaskStatus(task.status)
     }
   }, [state]);
+
+  const loadingSpinnerStyles = {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100vw",
+    height: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 9999,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  };
 
 
 
@@ -457,6 +470,12 @@ const CreateTaskModal = ({ closeModal, status }) => {
             />
           </div>
         )}
+                {loading && (
+        <div style={loadingSpinnerStyles}>
+        <PropagateLoader color="#ffffff" />
+        </div>
+      )}
+
       </div>
     </div>
   );

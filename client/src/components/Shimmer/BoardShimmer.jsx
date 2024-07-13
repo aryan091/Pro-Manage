@@ -1,4 +1,3 @@
-import React from 'react';
 import './Shimmer.css'; // Ensure you have the necessary styles in this CSS file
 
 const BoardShimmer = () => {

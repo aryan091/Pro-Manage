@@ -4,7 +4,7 @@ import axios from "axios";
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/UserContext';
-
+import { PropagateLoader } from 'react-spinners';
 
 const Login = ({ clickLogin, clickSignUp }) => {
 
@@ -18,6 +18,20 @@ const Login = ({ clickLogin, clickSignUp }) => {
   const [loading, setLoading] = useState(false); 
 
   const navigate = useNavigate();
+
+  const loadingSpinnerStyles = {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100vw",
+    height: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 9999,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  };
+
 
   const loginUser = async({ email, password }) => {
     setLoading(true);
@@ -140,6 +154,12 @@ const Login = ({ clickLogin, clickSignUp }) => {
         {statusMessage && (
           <p className="text-center mt-4 text-[#828282]">{statusMessage}</p>
         )}
+                {loading && (
+        <div style={loadingSpinnerStyles}>
+        <PropagateLoader color="#ffffff" />
+        </div>
+      )}
+
 
       </form>
     </div>
