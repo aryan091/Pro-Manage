@@ -9,8 +9,8 @@ import boardIcon from '../../assets/board.png';
 import setting from '../../assets/settings.png';
 import Shimmer from '../Shimmer'; // Adjust the path as per your file structure
 
-const SideBar = ({ loading }) => {
-  const { setUsername, setId, setIsUserLoggedIn } = useContext(UserContext);
+const SideBar = () => {
+  const { setUsername, setId, setIsUserLoggedIn , loading } = useContext(UserContext);
   const navigate = useNavigate();
 
   // Shimmer effect for each sidebar item
