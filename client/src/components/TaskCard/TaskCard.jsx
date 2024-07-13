@@ -148,7 +148,7 @@ const handleEdit = (task) => {
 }
 
 const handleShareTask = (taskId) => {
-  const shareableLink = `http://localhost:5173/public/${taskId}`;
+  const shareableLink = `https://pro-manage-iota-eight.vercel.app/public/${taskId}`;
   navigator.clipboard.writeText(shareableLink)
     .then(() => {
       toast.success('Link Copied to Clipboard..!')
