@@ -25,7 +25,7 @@ const Home = () => {
   };
 
   useEffect(() => {
-    if (isUserLoggedIn) {
+    if (isUserLoggedIn || localStorage.getItem('token')) {
       navigate('/app/dashboard');
     }
   }, []);
